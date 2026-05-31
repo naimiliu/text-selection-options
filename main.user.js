@@ -49,14 +49,14 @@
                 background: black; color: white; 
                 border-radius: 5px; z-index: 9999;
                 min-width: 200px; max-width: 400px;
-                padding: 10px;
+                padding: 0px;
             }
             #popup button {
                 position: absolute;
-                top: 0px; right: 20px;
+                top: 3px; right: 10px;
                 background: none;
                 border: none;
-                color: #000;
+                color: #fff;
                 cursor: pointer;
                 font-size: 14px;
             }
@@ -64,12 +64,13 @@
                 color: red;
             }
             #popup-content {
-                background: white; color: black; 
-                border: 1px solid #ccc; border-radius: 5px;
-                padding: 10px;
-                margin-top: 10px;
+                background: white; 
+                color: black; 
+                border: 1px solid #ccc;
+                padding: 20px 12px;
+                margin-top: 25px;
                 font-size: 16px;
-                line-height: 1.5;
+                line-height: 2.5;
                 scroll-y: auto;
                 max-height: 300px;
             }
