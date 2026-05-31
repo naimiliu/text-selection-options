@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.5
+// @version      1.0.6
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -48,6 +48,8 @@
                 top: 0px; left: 0px; 
                 background: white; color: black; 
                 border-radius: 5px; z-index: 9999;
+                min-width: 200px; max-width: 400px;
+                padding: 10px;
             }
             #popup button {
                 top: 0px; right: 0px;
@@ -59,6 +61,13 @@
             }
             #popup button:hover {
                 color: red;
+            }
+            #popup-content {
+                margin-top: 10px;
+                font-size: 16px;
+                line-height: 1.5;
+                scroll-y: auto;
+                max-height: 300px;
             }
         `;
         document.head.appendChild(style);
