@@ -125,7 +125,7 @@
                     .map(s => s.trim())
                     .filter(s => s.length > 0)
                     .reduce((acc, current) => {
-                        const punctuations = ["。", "？", "！", "；", "…", ","];
+                        const punctuations = ["。", "？", "！", "；", "…", ",", "”", "“", "‘", "’"];
                         if (punctuations.includes(current) && acc.length > 0) {
                             acc[acc.length - 1] += current;
                         } else {
