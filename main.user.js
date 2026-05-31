@@ -10,12 +10,13 @@
 // @run-at       document-end
 // @requires     https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
 // ==/UserScript==
+/* global pinyinPro */
 
 (function() {
     'use strict';
 
     let selectedText = "";
-    let { pinyin } = pinyinPro;
+    let { html } = pinyinPro;
     function init() {
         const style = document.createElement('style');
         style.textContent = `
@@ -68,8 +69,9 @@
             window.open(`https://translate.google.com/?sl=auto&tl=zh-TW&op=translate&text=${query}`, '_blank');
         });
         options.querySelector("#option5").addEventListener("click", () => {
-            const pinyinText = pinyin(selectedText, { toneType: 'num' });
-            alert(`拼音：${pinyinText}`);
+            //const pinyinText = pinyin(selectedText, { toneType: 'num' });
+            const pinyinHtml = html(selectedText);
+            alert(`拼音：${pinyinHtml}`);
         });
         document.body.appendChild(options);
     }
