@@ -18,10 +18,10 @@
 (function() {
     'use strict';
 
-    let selectedText = "";
-    let { html } = pinyinPro;
-    let { pinyin } = pinyinPro;
     function init() {
+        let selectedText = "";
+        let { html } = pinyinPro;
+
         const style = document.createElement('style');
         style.textContent = `
             #text-options {
@@ -68,7 +68,7 @@
                 color: black; 
                 border: 1px solid #ccc;
                 padding: 20px 12px;
-                margin-top: 25px;
+                margin-top: 5px;
                 font-size: 16px;
                 line-height: 2.5;
                 overflow-y: scroll;
@@ -91,7 +91,7 @@
         const popup = document.createElement("div");
         popup.id = "popup";
         popup.innerHTML = `
-            <button id="close-popup">X</button>
+            <div><span id="popup-title" style="padding:10px;">pinyin</span><button id="close-popup">X</button></div>
             <div id="popup-content"></div>
         `;
         document.body.appendChild(popup);
@@ -114,24 +114,39 @@
             window.open(`https://translate.google.com/?sl=auto&tl=zh-TW&op=translate&text=${query}`, '_blank');
         });
         options.querySelector("#option5").addEventListener("click", () => {            
-            const popup = document.getElementById("popup");
             const popupContent = document.getElementById("popup-content");
-            if(popup && popupContent) {
-                const pinyinHtml = html(selectedText);
-                popup.style.display = "block";
-                popup.style.top = `${window.event.clientY + 10}px`;
-                popup.style.left = `${window.event.clientX + 10}px`;
-                popupContent.innerHTML = pinyinHtml;
-            }
-            else {
-                const pinyinText = pinyin(selectedText, { toneType: 'none' });
-                alert(`拼音：${pinyinText}`);
-            }
+            const popupTitle = document.getElementById("popup-title");
+            const pinyinHtml = html(selectedText);
+            popup.style.display = "block";
+            popup.style.top = `${window.event.clientY + 20}px`;
+            popup.style.left = `${window.event.clientX + 10}px`;
+            popupTitle.textContent = "pinyin";
+            popupContent.innerHTML = pinyinHtml;
         });      
         document.getElementById("close-popup").addEventListener("click", () => {
-            const popup = document.getElementById("popup");
-            if(popup) popup.style.display = "none";
-        });  
+            popup.style.display = "none";
+        }); 
+
+        document.addEventListener("mouseup", (e) => {
+            // 取得目前選取的 Selection 物件
+            const selection = window.getSelection();
+
+            // 將選取內容轉為純文字並去除前後多餘空白
+            selectedText = selection.toString().trim();
+
+            if (selectedText.length > 0) {
+                console.log("已選取文字：", selectedText);
+                // 顯示自定義選單
+                options.style.display = "block";
+                const rect = selection.getRangeAt(0).getBoundingClientRect();
+                options.style.top = `${rect.top - options.offsetHeight - 10}px`;
+                options.style.left = `${rect.left + (rect.width/2) - (options.offsetWidth/2)}px`;
+            }
+            else {
+                options.style.display = "none";
+                popup.style.display = "none";
+            }
+        });
     }
 
     class ConsistentLongTextSpeaker {
@@ -238,26 +253,6 @@
         }
     }    
 
-    document.addEventListener("mouseup", (e) => {
-        // 取得目前選取的 Selection 物件
-        const selection = window.getSelection();
-
-        // 將選取內容轉為純文字並去除前後多餘空白
-        selectedText = selection.toString().trim();
-
-        const options = document.getElementById("text-options");
-        if (selectedText.length > 0) {
-            console.log("已選取文字：", selectedText);
-            // 顯示自定義選單
-            options.style.display = "block";
-            const rect = selection.getRangeAt(0).getBoundingClientRect();
-            options.style.top = `${rect.top - options.offsetHeight - 10}px`;
-            options.style.left = `${rect.left + (rect.width/2) - (options.offsetWidth/2)}px`;
-        }
-        else {
-            if (options) options.style.display = "none";
-        }
-    });
 
     if (document.readyState === 'complete') init();
     else window.addEventListener('load', init);
