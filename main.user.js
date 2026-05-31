@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         GitHub 文字選取插件
+// @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
 // @version      1.0.1
 // @description  文字選取後,顯示命令列
