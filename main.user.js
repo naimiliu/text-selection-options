@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.3
+// @version      1.0.4
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -20,6 +20,7 @@
 
     let selectedText = "";
     let { html } = pinyinPro;
+    let { pinyin } = pinyinPro;
     function init() {
         const style = document.createElement('style');
         style.textContent = `
@@ -73,6 +74,7 @@
         document.body.appendChild(options);
 
         const popup = document.createElement("div");
+        popup.id = "popup";
         popup.innerHTML = `
             <button id="close-popup">X</button>
             <div id="popup-content"></div>
