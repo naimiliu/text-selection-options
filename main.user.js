@@ -75,6 +75,8 @@
                 overflow-y: scroll;
                 max-height: 300px;
             }
+            .py-result-item {
+                gap: 5px;}
         `;
         document.head.appendChild(style);
 
