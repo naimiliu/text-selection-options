@@ -8,7 +8,7 @@
 // @match        https://*/*
 // @grant        none
 // @run-at       document-end
-// @requires     https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
+// @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
 // ==/UserScript==
 /* global pinyinPro */
 
