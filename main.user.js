@@ -46,7 +46,7 @@
             #popup {
                 display: none; position: fixed; 
                 top: 0px; left: 0px; 
-                background: black; color: white; 
+                background: #8b8b8b; color: white; 
                 border-radius: 5px; z-index: 9999;
                 min-width: 200px; max-width: 400px;
                 padding: 0px;
@@ -71,7 +71,7 @@
                 margin-top: 25px;
                 font-size: 16px;
                 line-height: 2.5;
-                scroll-y: auto;
+                overflow-y: scroll;
                 max-height: 300px;
             }
         `;
