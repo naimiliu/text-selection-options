@@ -120,7 +120,7 @@
         options.querySelector("#option5").addEventListener("click", () => {            
             const popupContent = document.getElementById("popup-content");
             const popupTitle = document.getElementById("popup-title");
-            const sentences = selectedText.split(/[\n\r]/g).filter(s => s.trim().length > 0);
+            const sentences = selectedText.split(/([\n\r]|\s*)/g).filter(s => s.trim().length > 0);
             let pinyinHtml = "";
             sentences.forEach(sentence => {
                 pinyinHtml += html(sentence)+"<br>";
