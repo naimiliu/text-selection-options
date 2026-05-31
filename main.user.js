@@ -76,7 +76,8 @@
                 max-height: 300px;
             }
             .py-result-item {
-                gap: 5px;}
+                padding-right: 5px;
+            }
         `;
         document.head.appendChild(style);
 
@@ -119,7 +120,11 @@
         options.querySelector("#option5").addEventListener("click", () => {            
             const popupContent = document.getElementById("popup-content");
             const popupTitle = document.getElementById("popup-title");
-            const pinyinHtml = html(selectedText);
+            const sentences = selectedText.split(/[\n\r]/g).filter(s => s.trim().length > 0);
+            let pinyinHtml = "";
+            sentences.forEach(sentence => {
+                pinyinHtml += html(sentence)+"<br>";
+            });
             popup.style.display = "block";
             popup.style.top = `${window.event.clientY + 20}px`;
             popup.style.left = `${window.event.clientX + 10}px`;
