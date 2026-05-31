@@ -64,6 +64,7 @@
                 color: red;
             }
             #popup-content {
+                font-family: "Microsoft JhengHei", sans-serif;
                 background: white; 
                 color: black; 
                 border: 1px solid #ccc;
