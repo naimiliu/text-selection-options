@@ -132,6 +132,7 @@
                         }
                         return acc;
                     }, []);
+            console.log("切片後的句子：", sentences);
             let pinyinHtml = "";
             sentences.forEach(sentence => {
                 pinyinHtml += html(sentence)+"<br>";
