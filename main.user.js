@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.2
+// @version      1.0.3
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -9,6 +9,9 @@
 // @grant        none
 // @run-at       document-end
 // @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
+// @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-options/main/main.user.js
+// @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-options/main/main.user.js
+
 // ==/UserScript==
 /* global pinyinPro */
 
@@ -39,18 +42,43 @@
             #text-options button:hover {
                 color: #0056b3;
             }
+            #popup {
+                display: none; position: fixed; 
+                background: white; color: black; 
+                border-radius: 5px; z-index: 9999;
+            }
+            #popup button {
+                top: 0px; right: 0px;
+                background: none;
+                border: none;
+                color: #000;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            #popup button:hover {
+                color: red;
+            }
         `;
         document.head.appendChild(style);
 
         const options = document.createElement("div");
-
-        options.innerHTML = `<div id="text-options">
+        options.id = "text-options";
+        options.innerHTML = `
             <button id="option1">複製</button>
             <button id="option2">搜尋</button>
             <button id="option3">朗讀</button>
             <button id="option4">翻譯</button>
             <button id="option5">拼音</button>
-        </div>`;
+        `;
+        document.body.appendChild(options);
+
+        const popup = document.createElement("div");
+        popup.innerHTML = `
+            <button id="close-popup">X</button>
+            <div id="popup-content"></div>
+        `;
+        document.body.appendChild(popup);
+
         options.querySelector("#option1").addEventListener("click", () => {
             navigator.clipboard.writeText(selectedText).then(() => {
                 alert("已複製到剪貼簿！");
@@ -68,12 +96,19 @@
             const query = encodeURIComponent(selectedText);
             window.open(`https://translate.google.com/?sl=auto&tl=zh-TW&op=translate&text=${query}`, '_blank');
         });
-        options.querySelector("#option5").addEventListener("click", () => {
-            //const pinyinText = pinyin(selectedText, { toneType: 'num' });
-            const pinyinHtml = html(selectedText);
-            alert(`拼音：${pinyinHtml}`);
-        });
-        document.body.appendChild(options);
+        options.querySelector("#option5").addEventListener("click", () => {            
+            const popup = document.getElementById("popup");
+            const popupContent = document.getElementById("popup-content");
+            if(popup && popupContent) {
+                const pinyinHtml = html(selectedText);
+                popup.style.display = "block";
+                popupContent.innerHTML = pinyinHtml;
+            }
+            else {
+                const pinyinText = pinyin(selectedText, { toneType: 'none' });
+                alert(`拼音：${pinyinText}`);
+            }
+        });        
     }
 
     class ConsistentLongTextSpeaker {
@@ -187,17 +222,16 @@
         // 將選取內容轉為純文字並去除前後多餘空白
         selectedText = selection.toString().trim();
 
+        const options = document.getElementById("text-options");
         if (selectedText.length > 0) {
             console.log("已選取文字：", selectedText);
             // 顯示自定義選單
-            const options = document.getElementById("text-options");
             options.style.display = "block";
             const rect = selection.getRangeAt(0).getBoundingClientRect();
             options.style.top = `${rect.top - options.offsetHeight - 10}px`;
             options.style.left = `${rect.left + (rect.width/2) - (options.offsetWidth/2)}px`;
         }
         else {
-            const options = document.getElementById("text-options");
             if (options) options.style.display = "none";
         }
     });
