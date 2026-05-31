@@ -120,7 +120,18 @@
         options.querySelector("#option5").addEventListener("click", () => {            
             const popupContent = document.getElementById("popup-content");
             const popupTitle = document.getElementById("popup-title");
-            const sentences = selectedText.split(/([\n\r]|\s*)/g).filter(s => s.trim().length > 0);
+            const sentences = selectedText.split(/([。？！；…\n\r]|\,\s*)/g)
+                    .map(s => s.trim())
+                    .filter(s => s.length > 0)
+                    .reduce((acc, current) => {
+                        const punctuations = ["。", "？", "！", "；", "…", ","];
+                        if (punctuations.includes(current) && acc.length > 0) {
+                            acc[acc.length - 1] += current;
+                        } else {
+                            acc.push(current);
+                        }
+                        return acc;
+                    }, []);
             let pinyinHtml = "";
             sentences.forEach(sentence => {
                 pinyinHtml += html(sentence)+"<br>";
