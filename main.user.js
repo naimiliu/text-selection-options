@@ -46,14 +46,14 @@
             #popup {
                 display: none; position: fixed; 
                 top: 0px; left: 0px; 
-                background: white; color: black; 
+                background: black; color: white; 
                 border-radius: 5px; z-index: 9999;
                 min-width: 200px; max-width: 400px;
                 padding: 10px;
             }
             #popup button {
-                position: fixed;
-                top: 0px; right: 0px;
+                position: absolute;
+                top: 0px; right: 20px;
                 background: none;
                 border: none;
                 color: #000;
@@ -64,6 +64,9 @@
                 color: red;
             }
             #popup-content {
+                background: white; color: black; 
+                border: 1px solid #ccc; border-radius: 5px;
+                padding: 10px;
                 margin-top: 10px;
                 font-size: 16px;
                 line-height: 1.5;
