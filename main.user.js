@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.4
+// @version      1.0.5
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -45,6 +45,7 @@
             }
             #popup {
                 display: none; position: fixed; 
+                top: 0px; left: 0px; 
                 background: white; color: black; 
                 border-radius: 5px; z-index: 9999;
             }
@@ -104,6 +105,8 @@
             if(popup && popupContent) {
                 const pinyinHtml = html(selectedText);
                 popup.style.display = "block";
+                popup.style.top = `${window.event.clientY + 10}px`;
+                popup.style.left = `${window.event.clientX + 10}px`;
                 popupContent.innerHTML = pinyinHtml;
             }
             else {
