@@ -73,6 +73,7 @@
                 font-size: 16px;
                 line-height: 2.5;
                 overflow-y: scroll;
+                overflow-x: hidden;
                 max-height: 300px;
             }
             .py-result-item {
@@ -132,7 +133,6 @@
                         }
                         return acc;
                     }, []);
-            console.log("切片後的句子：", sentences);
             let pinyinHtml = "";
             sentences.forEach(sentence => {
                 pinyinHtml += html(sentence)+"<br>";
