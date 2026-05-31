@@ -8,12 +8,14 @@
 // @match        https://*/*
 // @grant        none
 // @run-at       document-end
+// @requires     https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
 // ==/UserScript==
 
 (function() {
     'use strict';
 
     let selectedText = "";
+    let { pinyin } = pinyinPro;
     function init() {
         const style = document.createElement('style');
         style.textContent = `
@@ -46,6 +48,7 @@
             <button id="option2">搜尋</button>
             <button id="option3">朗讀</button>
             <button id="option4">翻譯</button>
+            <button id="option5">拼音</button>
         </div>`;
         options.querySelector("#option1").addEventListener("click", () => {
             navigator.clipboard.writeText(selectedText).then(() => {
@@ -63,6 +66,10 @@
         options.querySelector("#option4").addEventListener("click", () => {
             const query = encodeURIComponent(selectedText);
             window.open(`https://translate.google.com/?sl=auto&tl=zh-TW&op=translate&text=${query}`, '_blank');
+        });
+        options.querySelector("#option5").addEventListener("click", () => {
+            const pinyinText = pinyin(selectedText, { toneType: 'num' });
+            alert(`拼音：${pinyinText}`);
         });
         document.body.appendChild(options);
     }
