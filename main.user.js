@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.6
+// @version      1.0.7
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -52,6 +52,7 @@
                 padding: 10px;
             }
             #popup button {
+                position: fixed;
                 top: 0px; right: 0px;
                 background: none;
                 border: none;
@@ -122,7 +123,11 @@
                 const pinyinText = pinyin(selectedText, { toneType: 'none' });
                 alert(`拼音：${pinyinText}`);
             }
-        });        
+        });      
+        document.getElementById("close-popup").addEventListener("click", () => {
+            const popup = document.getElementById("popup");
+            if(popup) popup.style.display = "none";
+        });  
     }
 
     class ConsistentLongTextSpeaker {
