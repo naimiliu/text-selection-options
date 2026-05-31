@@ -3,7 +3,7 @@
 // @namespace    https://github.com/naimiliu/text-selection-options
 // @version      1.0.1
 // @description  文字選取後,顯示命令列
-// @icon         https://github.githubassets.com/pinned-octocat.svg
+// @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
 // @match        https://*/*
 // @grant        none
