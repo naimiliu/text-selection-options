@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.7
+// @version      1.0.8
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -103,7 +103,7 @@
 
         options.querySelector("#option1").addEventListener("click", () => {
             navigator.clipboard.writeText(selectedText).then(() => {
-                alert("已複製到剪貼簿！");
+                options.style.display = "none";
             });
         });
         options.querySelector("#option2").addEventListener("click", () => {
