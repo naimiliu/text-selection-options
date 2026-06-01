@@ -147,7 +147,7 @@
             popup.style.display = "none";
         }); 
 
-        host.addEventListener('selectionchange', () => {
+        document.addEventListener('selectionchange', () => {
             const selection = shadow.getSelection();
             selectedText = selection.toString().trim();
 
