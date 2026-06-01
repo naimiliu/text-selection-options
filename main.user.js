@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.9
+// @version      1.0.10
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -25,8 +25,7 @@
         const style = document.createElement('style');
         style.textContent = `
             #text-options {
-                display: none; position: fixed; 
-                top: 0px; left: 0px; 
+                display: none; position: fixed;
                 background: white; color: black; 
                 padding: 10px; border: 1px solid #ccc; 
                 border-radius: 20px; z-index: 9999;
@@ -38,7 +37,6 @@
                 color: #007BFF;
                 cursor: pointer;
                 font-size: 14px;
-                margin: 0 5px;
             }
             #text-options button:hover {
                 color: #0056b3;
@@ -169,7 +167,7 @@
             if (selectedText.length > 0) {
                 //console.log("已選取文字：", selectedText);
                 // 顯示自定義選單
-                options.style.display = "block";
+                options.style.display = "flex";
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
                 options.style.top = `${rect.top - options.offsetHeight - 10}px`;
                 options.style.left = `${rect.left + (rect.width/2) - (options.offsetWidth/2)}px`;
