@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.10
+// @version      1.0.11
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
 // @match        https://*/*
+// @exclude      *://*.bankchb.com/*
 // @grant        none
 // @run-at       document-end
 // @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
