@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取選項插件
 // @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.8
+// @version      1.0.9
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
 // @author       naimiliu
@@ -147,6 +147,18 @@
             popup.style.display = "none";
         }); 
 
+        host.addEventListener('selectionchange', () => {
+            const selection = shadow.getSelection();
+            selectedText = selection.toString().trim();
+
+            // 如果畫面上沒有選取任何文字，立刻隱藏選單與彈窗
+            if (selectedText.length === 0) {
+                //console.log("沒有選取文字了，隱藏選單與彈窗");
+                options.style.display = "none";
+                popup.style.display = "none";
+            }
+        });
+
         document.addEventListener("mouseup", (e) => {
             // 取得目前選取的 Selection 物件
             const selection = window.getSelection();
@@ -155,17 +167,17 @@
             selectedText = selection.toString().trim();
 
             if (selectedText.length > 0) {
-                console.log("已選取文字：", selectedText);
+                //console.log("已選取文字：", selectedText);
                 // 顯示自定義選單
                 options.style.display = "block";
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
                 options.style.top = `${rect.top - options.offsetHeight - 10}px`;
                 options.style.left = `${rect.left + (rect.width/2) - (options.offsetWidth/2)}px`;
             }
-            else {
+            /*else {
                 options.style.display = "none";
                 popup.style.display = "none";
-            }
+            }*/
         });
     }
 
