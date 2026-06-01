@@ -148,7 +148,7 @@
         }); 
 
         document.addEventListener('selectionchange', () => {
-            const selection = shadow.getSelection();
+            const selection = window.getSelection();
             selectedText = selection.toString().trim();
 
             // 如果畫面上沒有選取任何文字，立刻隱藏選單與彈窗
