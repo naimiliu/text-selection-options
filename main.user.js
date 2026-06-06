@@ -67,9 +67,8 @@
                 padding: 10px; border: 1px solid #ccc; 
                 border-radius: 20px; z-index: 1234567;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                pointer-events: auto;
             }
-            #toolbox.show { display: flex;}
+            #toolbox.show { display: flex;  pointer-events: auto; }
             #toolbox button {
                 background: none;
                 border: none;
@@ -86,10 +85,9 @@
                 background: #8b8b8b; color: white; 
                 border-radius: 5px; z-index: 1234567;
                 min-width: 200px; max-width: 400px;
-                padding: 0px;
-                pointer-events: auto;
+                padding: 0px;               
             }
-            #pinyin-display.show { display: block;}
+            #pinyin-display.show { display: block; pointer-events: auto; }
             #pinyin-display button {
                 position: absolute;
                 top: 3px; right: 10px;
