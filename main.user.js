@@ -139,7 +139,7 @@
         `;
         shadow.appendChild(pinyinDisplay);
 
-        const showMessage = (msg, options={s:3, x:window.clientX, y=window.clientY}) => {
+        const showMessage = (msg, options={s:10, x:window.clientX, y=window.clientY}) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
             container.style.left = options.x;
@@ -150,7 +150,7 @@
             container.textContent = msg;
             shadow.append(container);
             setTimeout(() => {
-                shadow.removeChild(container);
+                //shadow.removeChild(container);
             },options.s*1000);
         };
 
@@ -269,25 +269,28 @@
         });
 
         document.addEventListener("mouseup", (e) => {
-            // 取得目前選取的 Selection 物件
-            const selection = window.getSelection();
+            setTimeout(() => {
+                // 取得目前選取的 Selection 物件
+                const selection = window.getSelection();
 
-            // 將選取內容轉為純文字並去除前後多餘空白
-            selectedText = selection.toString().trim();
+                // 將選取內容轉為純文字並去除前後多餘空白
+                selectedText = selection.toString().trim();
 
-            if (selectedText.length > 0) {
-                // 顯示自定義選單
-                toolbox.classList.add("show");
-                const rect = selection.getRangeAt(0).getBoundingClientRect();
-                toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
-                toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
-                // 更新彈窗內容
-                refreshPinyinDisplayContent(selectedText);
-            }
-            else {
-                toolbox.classList.remove("show");
-                pinyinDisplay.classList.remove("show");
-            }
+                if (selectedText.length > 0) {
+                    // 顯示自定義選單
+                    toolbox.classList.add("show");
+                    const rect = selection.getRangeAt(0).getBoundingClientRect();
+                    toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
+                    toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
+                    // 更新彈窗內容
+                    refreshPinyinDisplayContent(selectedText);
+                }
+                else {
+                    toolbox.classList.remove("show");
+                    pinyinDisplay.classList.remove("show");
+                }
+
+            }, 100);
         });
     }
 
