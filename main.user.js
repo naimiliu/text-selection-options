@@ -103,14 +103,22 @@
             #pinyin-display button:hover {
                 color: red;
             }
-            #pinyin-display-header { display: flex; cursor: move; background: #007BFF; color: white; height: 30px; padding-left: 10px;  border-top-left-radius: 8px; border-top-right-radius: 8px; align-items: center; justify-content: space-between; }
+            #pinyin-display-header { 
+                display: flex; cursor: move; 
+                background: #007BFF; color: white; 
+                height: 30px; padding-left: 10px;  
+                border: none;
+                border-top-left-radius: 8px; border-top-right-radius: 8px; 
+                align-items: center; justify-content: space-between; 
+            }
             #pinyin-display-content {
                 font-family: "Microsoft JhengHei", sans-serif;
                 background: white; 
                 color: black; 
-                border: 1px solid #ccc;
+                border: none;
+                border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
                 padding: 20px 12px;
-                margin-top: 5px;
+                margin: 0px;
                 font-size: 16px;
                 line-height: 2.5;
                 overflow-y: scroll;
@@ -216,8 +224,8 @@
             pinyinDisplay.classList.add("show");
             if(isFirstDisplay) {
                 isFirstDisplay = false;
-                pinyinDisplay.style.left = `${toolbox.clientX + toolbox.offsetWidth + 10}px`;
-                pinyinDisplay.style.top = `${toolbox.clientY}px`;
+                pinyinDisplay.style.left = `${toolbox.offsetLeft + toolbox.offsetWidth + 10}px`;
+                pinyinDisplay.style.top = `${toolbox.offsetRight}px`;
             }
         });
         // 拼音事件監聽
