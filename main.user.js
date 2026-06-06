@@ -30,7 +30,8 @@
             height: '100vh',
             zIndex: '2147483647',
             overflow: 'hidden',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            pointerEvents: 'none'
         });
         const shadow = host.attachShadow({
             mode: 'open'
@@ -66,6 +67,7 @@
                 padding: 10px; border: 1px solid #ccc; 
                 border-radius: 20px; z-index: 9999;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                pointer-events: auto;
             }
             #toolbox.show { display: flex;}
             #toolbox button {
@@ -85,6 +87,7 @@
                 border-radius: 5px; z-index: 9999;
                 min-width: 200px; max-width: 400px;
                 padding: 0px;
+                pointer-events: auto;
             }
             #pinyin-display.show { display: block;}
             #pinyin-display button {
@@ -139,7 +142,7 @@
         `;
         shadow.appendChild(pinyinDisplay);
 
-        const showMessage = (msg, options={s:10, x:window.clientX, y=window.clientY}) => {
+        const showMessage = (msg, options={s:10, x:window.clientX, y:window.clientY}) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
             container.style.left = options.x;
