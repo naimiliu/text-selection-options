@@ -107,8 +107,8 @@
                 display: flex; cursor: move; 
                 background: #007BFF; color: white; 
                 height: 30px; padding-left: 10px;  
-                margin: 1px;
-                border-radius: 8px 8px 0 0; 
+                margin: 0px;
+                border-radius: 5px 5px 0 0; 
                 align-items: center; justify-content: space-between; 
             }
             #pinyin-display-content {
@@ -116,7 +116,7 @@
                 background: white; 
                 color: black; 
                 margin: 1px;
-                border-radius: 0 0 8px 8px;
+                border-radius: 0 0 5px 5px;
                 padding: 20px 12px;
                 font-size: 16px;
                 line-height: 2.5;
