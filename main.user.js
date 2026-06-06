@@ -3,7 +3,7 @@
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
 // @version      1.0.12
 // @description  文字選取後,顯示命令列
-// @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/toolbox.svg
+// @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
 // @match        https://*/*
 // @exclude      *://*.bankchb.com/*
@@ -278,7 +278,7 @@
 
                 // 將選取內容轉為純文字並去除前後多餘空白
                 selectedText = selection.toString().trim();
-
+console.log("selectedText", selectedText);
                 if (selectedText.length > 0) {
                     // 顯示自定義選單
                     toolbox.classList.add("show");
