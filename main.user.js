@@ -107,18 +107,17 @@
                 display: flex; cursor: move; 
                 background: #007BFF; color: white; 
                 height: 30px; padding-left: 10px;  
-                border: none;
-                border-top-left-radius: 8px; border-top-right-radius: 8px; 
+                margin: 1px;
+                border-radius: 8px 8px 0 0; 
                 align-items: center; justify-content: space-between; 
             }
             #pinyin-display-content {
                 font-family: "Microsoft JhengHei", sans-serif;
                 background: white; 
                 color: black; 
-                border: none;
+                margin: 1px;
                 border-radius: 0 0 8px 8px;
                 padding: 20px 12px;
-                margin: 0px;
                 font-size: 16px;
                 line-height: 2.5;
                 overflow-y: scroll;
