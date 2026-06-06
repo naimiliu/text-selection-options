@@ -69,7 +69,7 @@
                 padding: 10px; border: 1px solid #ccc; 
                 border-radius: 20px; 
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); z-index: 2147483647;   
-                pointer-events: auto; }
+                pointer-events: auto; 
             }
             #toolbox.show { display: flex; }
             #toolbox button {
