@@ -65,7 +65,7 @@
                 display: none; position: fixed;
                 background: white; color: black; 
                 padding: 10px; border: 1px solid #ccc; 
-                border-radius: 20px; z-index: 9999;
+                border-radius: 20px; z-index: 1234567;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 pointer-events: auto;
             }
@@ -84,7 +84,7 @@
                 display: none; position: fixed; 
                 top: 0px; left: 0px; 
                 background: #8b8b8b; color: white; 
-                border-radius: 5px; z-index: 9999;
+                border-radius: 5px; z-index: 1234567;
                 min-width: 200px; max-width: 400px;
                 padding: 0px;
                 pointer-events: auto;
