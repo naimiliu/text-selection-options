@@ -60,13 +60,15 @@
                 justify-content: center; overflow: hidden;
                 z-index:999999; 
                 -webkit-overflow-scrolling: touch;
+                pointer-events: none; 
             }
             #toolbox {
-                display: none; position: fixed;
-                background: white; color: black; 
+                display: none; flex-direction: row; position: fixed; 
+                min-width: 232px; 
+                color: black;background: white; 
                 padding: 10px; border: 1px solid #ccc; 
-                border-radius: 20px; z-index: 2147483647;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                border-radius: 20px; 
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); z-index: 2147483647; }
             }
             #toolbox.show { display: flex;  pointer-events: auto; }
             #toolbox button {
@@ -81,11 +83,10 @@
             }
             #pinyin-display {
                 display: none; position: fixed; 
-                top: 0px; left: 0px; 
-                background: #8b8b8b; color: white; 
-                border-radius: 5px; z-index: 2147483647;
-                min-width: 200px; max-width: 400px;
-                padding: 0px;               
+                font-family: "Microsoft JhengHei", Arial, sans-serif; 
+                min-width: 250px; max-width: 400px; 
+                background: #fff; border: 2px solid #0056b3; 
+                border-radius: 8px; padding: 0px; z-index: 2147483647; }  
             }
             #pinyin-display.show { display: block; pointer-events: auto; }
             #pinyin-display button {
@@ -256,17 +257,6 @@
             e.preventDefault();
             e.stopPropagation();
             isDragging = false;
-        });
-        document.addEventListener('selectionchange', () => {
-            const selection = window.getSelection();
-            selectedText = selection.toString().trim();
-
-            // 如果畫面上沒有選取任何文字，立刻隱藏選單與彈窗
-            if (selectedText.length === 0) {
-                //console.log("沒有選取文字了，隱藏選單與彈窗");
-                toolbox.style.display = "none";
-                pinyinDisplay.style.display = "none";
-            }
         });
 
         document.addEventListener("mouseup", (e) => {
