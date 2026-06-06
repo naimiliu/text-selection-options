@@ -159,7 +159,7 @@
             container.style.transform = 'translate(-50%, -50%) scale(1)';
             container.style.padding = '15px';
             container.style.borderRadius = '8px';
-            container.style.background = '#221e1e';
+            container.style.background = '#808080';
             container.style.color = '#ffffff';
             container.style.fontSize = '20px';
             container.style.opacity = '1';
