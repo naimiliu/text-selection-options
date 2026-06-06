@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.13.004
+// @version      1.0.13.005
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -213,7 +213,7 @@
             navigator.clipboard.writeText(selectedText).then(() => {
                 const selection = window.getSelection()
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
-                showMessage("Copied!", `${rect.left+rect.width/2}px`, `${rect.top+rect.height/2}px`);                
+                showMessage("Copied!", `${rect.left + rect.width / 2}px`, `${rect.top - 30}px`);                
                 selection.removeAllRanges();
                 toolbox.classList.remove("show");
             });
