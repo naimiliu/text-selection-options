@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.12
+// @version      1.0.13
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -150,23 +150,41 @@
         `;
         shadow.appendChild(pinyinDisplay);
 
-        const showMessage = (msg, options={s:5, x:window.clientX, y:window.clientY}) => {
+        const showMessage = (msg) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
             container.style.left = '50%';
             container.style.top = '50%';
-            container.style.transform = 'translate(-50%)';
+            // ⭐ 初始狀態：置中，並且大小是正常 1 倍 (scale(1))
+            container.style.transform = 'translate(-50%, -50%) scale(1)';
             container.style.padding = '15px';
             container.style.borderRadius = '8px';
             container.style.background = '#221e1e';
             container.style.color = '#ffffff';
             container.style.fontSize = '20px';
+            container.style.opacity = '1';
+            
+            // ⭐ 核心修改：將 opacity 改成 all，這樣透明度和大小變動都會有 0.3 秒的流暢動畫
+            // （縮小動畫建議用 0.3s ~ 0.5s，1s 會顯得有點太慢、太拖沓）
+            container.style.transition = 'all 0.3s ease-out';
+            
+            container.style.pointerEvents = 'none'; 
             container.textContent = msg;
             shadow.append(container);
+
             setTimeout(() => {
-                shadow.removeChild(container);
-            },options.s*1000);
+                container.style.opacity = '0'; 
+                // ⭐ 核心修改：保持置中，但尺寸縮小到 0.8 倍
+                container.style.transform = 'translate(-50%, -50%) scale(0.5)'; 
+                
+                // 因為動畫改成了 0.3 秒 (0.3s)，所以這裡移除元件的等待時間也同步改成 300 毫秒
+                setTimeout(() => {
+                    shadow.removeChild(container);
+                }, 300);
+
+            }, 2000); // 顯示 2 秒後開始縮小淡出
         };
+
 
         const refreshPinyinDisplayContent = (text) => {
             const sentences = text.split(/([。？！；…\n\r]|\,\s*)/g)
