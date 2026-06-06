@@ -213,7 +213,7 @@
             navigator.clipboard.writeText(selectedText).then(() => {
                 const selection = window.getSelection()
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
-                showMessage("Copied!", rect.left+rect.width/2, rect.top+rect.height/2);                
+                showMessage("Copied!", `${rect.left+rect.width/2}px`, `${rect.top+rect.height/2}px`);                
                 selection.removeAllRanges();
                 toolbox.classList.remove("show");
             });
