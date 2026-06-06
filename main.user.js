@@ -287,8 +287,10 @@ console.log("selectedText", selectedText);
                     refreshPinyinDisplayContent(selectedText);
                 }
                 else {
+                    /*
                     toolbox.classList.remove("show");
                     pinyinDisplay.classList.remove("show");
+                    */
                 }
 
             }, 100);
