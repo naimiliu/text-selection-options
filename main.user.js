@@ -1,48 +1,84 @@
 // ==UserScript==
-// @name         文字選取選項插件
-// @namespace    https://github.com/naimiliu/text-selection-options
-// @version      1.0.11
+// @name         文字選取工具箱
+// @namespace    https://github.com/naimiliu/text-selection-toolbox
+// @version      1.0.12
 // @description  文字選取後,顯示命令列
-// @icon         https://raw.githubusercontent.com/naimiliu/text-selection-options/main/options.svg
+// @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/toolbox.svg
 // @author       naimiliu
 // @match        https://*/*
 // @exclude      *://*.bankchb.com/*
 // @grant        none
 // @run-at       document-end
 // @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
-// @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-options/main/main.user.js
-// @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-options/main/main.user.js
+// @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
+// @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
 
 // ==/UserScript==
 /* global pinyinPro */
 
-(function() {
+(function () {
     'use strict';
 
     function init() {
-        let selectedText = "";
+        const host = document.createElement('div');
+        host.id = "my-reader-overlay";
+        Object.assign(host.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100vw',
+            height: '100vh',
+            zIndex: '2147483647',
+            overflow: 'hidden',
+            WebkitOverflowScrolling: 'touch'
+        });
+        const shadow = host.attachShadow({
+            mode: 'open'
+        });
+        document.body.appendChild(host);
+
+
         let { html } = pinyinPro;
+        const speaker = new ConsistentLongTextSpeaker();
+        // ---- 文字選取相關變數
+        let selectedText = "";
+        let isSelecting = false;
+        let savedSelection = null; // 用來暫存文字選取範圍
+        // ---- 拼音視窗相關變數
+        let isFirstDisplay = true;
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
 
         const style = document.createElement('style');
         style.textContent = `
-            #text-options {
+            :host {
+                all: initial;
+                font-family: "Microsoft Yahei", Arial, sans-serif;
+                display:flex; position:fixed; top:0; left:0; width:100%; height:100%;
+                justify-content: center; overflow: hidden;
+                z-index:999999; 
+                -webkit-overflow-scrolling: touch;
+            }
+            #toolbox {
                 display: none; position: fixed;
                 background: white; color: black; 
                 padding: 10px; border: 1px solid #ccc; 
                 border-radius: 20px; z-index: 9999;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
-            #text-options button {
+            #toolbox.show { display: flex;}
+            #toolbox button {
                 background: none;
                 border: none;
                 color: #007BFF;
                 cursor: pointer;
                 font-size: 14px;
             }
-            #text-options button:hover {
+            #toolbox button:hover {
                 color: #0056b3;
             }
-            #popup {
+            #pinyin-display {
                 display: none; position: fixed; 
                 top: 0px; left: 0px; 
                 background: #8b8b8b; color: white; 
@@ -50,7 +86,8 @@
                 min-width: 200px; max-width: 400px;
                 padding: 0px;
             }
-            #popup button {
+            #pinyin-display.show { display: block;}
+            #pinyin-display button {
                 position: absolute;
                 top: 3px; right: 10px;
                 background: none;
@@ -59,10 +96,11 @@
                 cursor: pointer;
                 font-size: 14px;
             }
-            #popup button:hover {
+            #pinyin-display button:hover {
                 color: red;
             }
-            #popup-content {
+            #pinyin-display-header { display: flex; cursor: move; background: #007BFF; color: white; height: 30px; padding-left: 10px;  border-top-left-radius: 8px; border-top-right-radius: 8px; align-items: center; justify-content: space-between; }
+            #pinyin-display-content {
                 font-family: "Microsoft JhengHei", sans-serif;
                 background: white; 
                 color: black; 
@@ -79,73 +117,145 @@
                 padding-right: 5px;
             }
         `;
-        document.head.appendChild(style);
+        shadow.appendChild(style);
 
-        const options = document.createElement("div");
-        options.id = "text-options";
-        options.innerHTML = `
+        // 面板建立
+        const toolbox = document.createElement("div");
+        toolbox.id = "toolbox";
+        toolbox.innerHTML = `
             <button id="option1">複製</button>
             <button id="option2">搜尋</button>
             <button id="option3">朗讀</button>
             <button id="option4">翻譯</button>
             <button id="option5">拼音</button>
         `;
-        document.body.appendChild(options);
+        shadow.appendChild(toolbox);
 
-        const popup = document.createElement("div");
-        popup.id = "popup";
-        popup.innerHTML = `
-            <div><span id="popup-title" style="padding:10px;">pinyin</span><button id="close-popup">X</button></div>
-            <div id="popup-content"></div>
+        const pinyinDisplay = document.createElement("div");
+        pinyinDisplay.id = "pinyin-display";
+        pinyinDisplay.innerHTML = `
+            <div id="pinyin-display-header"><span id="pinyin-display-title" style="padding:10px;">pinyin</span><button id="close-pinyin-display">X</button></div>
+            <div id="pinyin-display-content"></div>
         `;
-        document.body.appendChild(popup);
+        shadow.appendChild(pinyinDisplay);
 
-        options.querySelector("#option1").addEventListener("click", () => {
+        const showMessage = (msg, options={s:3, x:window.clientX, y=window.clientY}) => {
+            const container = document.createElement("div");
+            container.style.position = 'fixed';
+            container.style.left = options.x;
+            container.style.top = options.y;
+            container.style.padding = '15px';
+            container.style.background = '#221e1e';
+            container.style.color = '#ffffff';
+            container.textContent = msg;
+            shadow.append(container);
+            setTimeout(() => {
+                shadow.removeChild(container);
+            },options.s*1000);
+        };
+
+        const refreshPinyinDisplayContent = (text) => {
+            const sentences = text.split(/([。？！；…\n\r]|\,\s*)/g)
+                .map(s => s.trim())
+                .filter(s => s.length > 0)
+                .reduce((acc, current) => {
+                    const punctuations = ["。", "？", "！", "；", "…", ",", "”", "“", "‘", "’"];
+                    if (punctuations.includes(current) && acc.length > 0) {
+                        acc[acc.length - 1] += current;
+                    } else {
+                        acc.push(current);
+                    }
+                    return acc;
+                }, []);
+            let pinyinHtml = "";
+            sentences.forEach(sentence => {
+                pinyinHtml += html(sentence) + "<br>";
+            });
+            pinyinDisplay.querySelector("#pinyin-display-content").innerHTML = pinyinHtml;
+        }
+
+
+        // 工具箱事件監聽
+        // --- 複製
+        toolbox.querySelector("#option1").addEventListener("click", () => {
             navigator.clipboard.writeText(selectedText).then(() => {
-                options.style.display = "none";
+                window.getSelection().removeAllRanges();
+                toolbox.classList.remove("show");
+                showMessage("Copied!");
             });
         });
-        options.querySelector("#option2").addEventListener("click", () => {
+        // --- 搜尋
+        toolbox.querySelector("#option2").addEventListener("click", () => {
             const query = encodeURIComponent(selectedText);
             window.open(`https://www.google.com/search?q=${query}`, '_blank');
         });
-        const speaker = new ConsistentLongTextSpeaker();
-        options.querySelector("#option3").addEventListener("click", () => {
+        // --- 朗讀
+        toolbox.querySelector("#option3").addEventListener("click", () => {
             speaker.speak(selectedText);
         });
-        options.querySelector("#option4").addEventListener("click", () => {
+        // --- 翻譯
+        toolbox.querySelector("#option4").addEventListener("click", () => {
             const query = encodeURIComponent(selectedText);
-            window.open(`https://translate.google.com/?sl=auto&tl=zh-TW&op=translate&text=${query}`, '_blank');
-        });
-        options.querySelector("#option5").addEventListener("click", () => {            
-            const popupContent = document.getElementById("popup-content");
-            const popupTitle = document.getElementById("popup-title");
-            const sentences = selectedText.split(/([。？！；…\n\r]|\,\s*)/g)
-                    .map(s => s.trim())
-                    .filter(s => s.length > 0)
-                    .reduce((acc, current) => {
-                        const punctuations = ["。", "？", "！", "；", "…", ",", "”", "“", "‘", "’"];
-                        if (punctuations.includes(current) && acc.length > 0) {
-                            acc[acc.length - 1] += current;
-                        } else {
-                            acc.push(current);
-                        }
-                        return acc;
-                    }, []);
-            let pinyinHtml = "";
-            sentences.forEach(sentence => {
-                pinyinHtml += html(sentence)+"<br>";
-            });
-            popup.style.display = "block";
-            popup.style.top = `${window.event.clientY + 20}px`;
-            popup.style.left = `${window.event.clientX + 10}px`;
-            popupTitle.textContent = "pinyin";
-            popupContent.innerHTML = pinyinHtml;
-        });      
-        document.getElementById("close-popup").addEventListener("click", () => {
-            popup.style.display = "none";
-        }); 
 
+            // 有中文則翻譯成英文，沒有中文則翻譯成中文
+            const targetLang = /[\u4e00-\u9fa5]/.test(selectedText) ? 'en' : 'zh-TW';
+            window.open(`https://translate.google.com/?sl=auto&tl=${targetLang}&op=translate&text=${query}`, '_blank');
+        });
+        // --- 拼音
+        toolbox.querySelector("#option5").addEventListener("click", (e) => {
+            if ( pinyinDisplay.classList.contains("show") ) {
+                pinyinDisplay.classList.remove("show");
+                return;
+            }
+            pinyinDisplay.classList.add("show");
+            if(isFirstDisplay) {
+                isFirstDisplay = false;
+                pinyinDisplay.style.left = `${e.clientX + 10}px`;
+                pinyinDisplay.style.top = `${e.clientY - 10}px`;
+            }
+        });
+        // 拼音事件監聽
+        // --- 關閉拼音
+        pinyinDisplay.querySelector("#close-pinyin-display").addEventListener("click", () => {
+            pinyinDisplay.classList.remove("show");
+        });
+
+        //--- 拖動彈窗
+        pinyinDisplay.querySelector("#pinyin-display-header").addEventListener("mousedown", e => {
+            e.preventDefault();
+
+            // 暫存當前的文字選取範圍，避免拖動過程中選取消失
+            const selection = shadow.getSelection();
+            if (selection.rangeCount > 0) {
+                savedSelection = selection.getRangeAt(0).cloneRange();
+            }
+
+            isDragging = true;
+            const rect = pinyinDisplay.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+        });
+        host.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+
+            // 移動時防止滑鼠選取到畫面上的其他文字
+            e.preventDefault();
+
+            pinyinDisplay.style.left = `${e.clientX - dragOffsetX}px`;
+            pinyinDisplay.style.top = `${e.clientY - dragOffsetY}px`;
+
+            // 在移動過程中，不斷強制將選取狀態補回來
+            if (savedSelection) {
+                const selection = shadow.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(savedSelection);
+            }
+        });
+        pinyinDisplay.querySelector("#pinyin-display-header").addEventListener("mouseup", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            isDragging = false;
+        });
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
             selectedText = selection.toString().trim();
@@ -153,8 +263,8 @@
             // 如果畫面上沒有選取任何文字，立刻隱藏選單與彈窗
             if (selectedText.length === 0) {
                 //console.log("沒有選取文字了，隱藏選單與彈窗");
-                options.style.display = "none";
-                popup.style.display = "none";
+                toolbox.style.display = "none";
+                pinyinDisplay.style.display = "none";
             }
         });
 
@@ -166,17 +276,18 @@
             selectedText = selection.toString().trim();
 
             if (selectedText.length > 0) {
-                //console.log("已選取文字：", selectedText);
                 // 顯示自定義選單
-                options.style.display = "flex";
+                toolbox.classList.add("show");
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
-                options.style.top = `${rect.top - options.offsetHeight - 10}px`;
-                options.style.left = `${rect.left + (rect.width/2) - (options.offsetWidth/2)}px`;
+                toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
+                toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
+                // 更新彈窗內容
+                refreshPinyinDisplayContent(selectedText);
             }
-            /*else {
-                options.style.display = "none";
-                popup.style.display = "none";
-            }*/
+            else {
+                toolbox.classList.remove("show");
+                pinyinDisplay.classList.remove("show");
+            }
         });
     }
 
@@ -190,7 +301,7 @@
                 pitch: 1.0,
                 volume: 1.0
             };
-            
+
             // 初始化語音庫（處理 getVoices 非同步載入問題）
             this._initVoices();
         }
@@ -200,9 +311,9 @@
                 const voices = this.synth.getVoices();
                 // 優先尋找微軟台灣曉臻（常見且好聽），次之選取任何台灣中文，最後保底中文
                 this.targetVoice = voices.find(v => (v.name.includes("曉臻") || v.name.includes("Hsiaochen")) && v.lang === "zh-TW")
-                                || voices.find(v => v.name.includes("臺灣") && v.lang === "zh-TW")
-                                || voices.find(v => v.lang === "zh-TW")
-                                || voices.find(v => v.lang.includes("zh"));
+                    || voices.find(v => v.name.includes("臺灣") && v.lang === "zh-TW")
+                    || voices.find(v => v.lang === "zh-TW")
+                    || voices.find(v => v.lang.includes("zh"));
                 //console.log("可用語音列表：", voices);
                 if (!this.targetVoice) {
                     console.log("未找到符合的語音");
@@ -223,18 +334,18 @@
         _splitText(text) {
             // 使用正規表達式，依據常見標點符號切分，並過濾掉空白字串
             return text.split(/([。？！；…\n\r]|\,\s*)/g)
-                    .map(s => s.trim())
-                    .filter(s => s.length > 0)
-                    .reduce((acc, current) => {
-                        // 重新把標點符號接回前一句的尾巴，讓語氣更自然
-                        const punctuations = ["。", "？", "！", "；", "…", ","];
-                        if (punctuations.includes(current) && acc.length > 0) {
-                            acc[acc.length - 1] += current;
-                        } else {
-                            acc.push(current);
-                        }
-                        return acc;
-                    }, []);
+                .map(s => s.trim())
+                .filter(s => s.length > 0)
+                .reduce((acc, current) => {
+                    // 重新把標點符號接回前一句的尾巴，讓語氣更自然
+                    const punctuations = ["。", "？", "！", "；", "…", ","];
+                    if (punctuations.includes(current) && acc.length > 0) {
+                        acc[acc.length - 1] += current;
+                    } else {
+                        acc.push(current);
+                    }
+                    return acc;
+                }, []);
         }
 
         /**
@@ -253,7 +364,7 @@
             // 3. 依序將切片丟入瀏覽器播放隊列
             sentences.forEach((sentence, index) => {
                 const utterance = new SpeechSynthesisUtterance(sentence);
-                
+
                 // 核心：每一句都強制綁定相同的語音與參數
                 if (this.targetVoice) {
                     utterance.voice = this.targetVoice;
@@ -282,7 +393,7 @@
         stop() {
             this.synth.cancel();
         }
-    }    
+    }
 
 
     if (document.readyState === 'complete') init();
