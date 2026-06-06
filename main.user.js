@@ -68,9 +68,10 @@
                 color: black;background: white; 
                 padding: 10px; border: 1px solid #ccc; 
                 border-radius: 20px; 
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); z-index: 2147483647; }
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); z-index: 2147483647;   
+                pointer-events: auto; }
             }
-            #toolbox.show { display: flex;  pointer-events: auto; }
+            #toolbox.show { display: flex; }
             #toolbox button {
                 background: none;
                 border: none;
@@ -86,9 +87,10 @@
                 font-family: "Microsoft JhengHei", Arial, sans-serif; 
                 min-width: 250px; max-width: 400px; 
                 background: #fff; border: 2px solid #0056b3; 
-                border-radius: 8px; padding: 0px; z-index: 2147483647; }  
-            }
-            #pinyin-display.show { display: block; pointer-events: auto; }
+                border-radius: 8px; padding: 0px; z-index: 2147483647; 
+                pointer-events: auto;
+            }  
+            #pinyin-display.show { display: block; }
             #pinyin-display button {
                 position: absolute;
                 top: 3px; right: 10px;
