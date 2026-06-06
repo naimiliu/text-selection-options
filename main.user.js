@@ -153,14 +153,15 @@
         const showMessage = (msg, options={s:5, x:window.clientX, y:window.clientY}) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
+            container.style.left = '50%';
+            container.style.top = '50%';
+            container.style.transform = 'translate(-50%)';
             container.style.padding = '15px';
             container.style.borderRadius = '8px';
             container.style.background = '#221e1e';
             container.style.color = '#ffffff';
             container.style.fontSize = '20px';
             container.textContent = msg;
-            container.style.left = `${options.x}px`;
-            container.style.top = `${options.y}px`;
             shadow.append(container);
             setTimeout(() => {
                 shadow.removeChild(container);
