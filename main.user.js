@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.13
+// @version      1.0.13-2026-06-07-001
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -150,7 +150,7 @@
         `;
         shadow.appendChild(pinyinDisplay);
 
-        const showMessage = (msg) => {
+        const showMessage = (msg, centerX, centerY) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
             container.style.left = '50%';
@@ -211,9 +211,11 @@
         // --- 複製
         toolbox.querySelector("#option1").addEventListener("click", () => {
             navigator.clipboard.writeText(selectedText).then(() => {
-                window.getSelection().removeAllRanges();
+                const selection = window.getSelection()
+                cont rect = selection.getRangeAt(0).getBoundingClientRect();
+                showMessage("Copied!", rect.left+rect.width/2, rect.top+rect.height/2);                
+                selection.removeAllRanges();
                 toolbox.classList.remove("show");
-                showMessage("Copied!");
             });
         });
         // --- 搜尋
