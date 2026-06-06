@@ -216,8 +216,8 @@
             pinyinDisplay.classList.add("show");
             if(isFirstDisplay) {
                 isFirstDisplay = false;
-                pinyinDisplay.style.left = `${e.clientX + 10}px`;
-                pinyinDisplay.style.top = `${e.clientY - 10}px`;
+                pinyinDisplay.style.left = `${toolbox.clientX + toolbox.offsetWidth + 10}px`;
+                pinyinDisplay.style.top = `${toolbox.clientY}px`;
             }
         });
         // 拼音事件監聽
