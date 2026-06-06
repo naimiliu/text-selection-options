@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.13.002
+// @version      1.0.13.003
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -153,8 +153,8 @@
         const showMessage = (msg, centerX, centerY) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
-            container.style.left = '50%';
-            container.style.top = '50%';
+            container.style.left = `${centerX??'50%'}`;
+            container.style.top = `${centerY??'50%'}`;;
             // ⭐ 初始狀態：置中，並且大小是正常 1 倍 (scale(1))
             container.style.transform = 'translate(-50%, -50%) scale(1)';
             container.style.padding = '15px';
