@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.13.005
+// @version      1.0.13.006
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -159,7 +159,7 @@
             container.style.transform = 'translate(-50%, -50%) scale(1)';
             container.style.padding = '15px';
             container.style.borderRadius = '8px';
-            container.style.background = '#808080';
+            container.style.background = '#4e4c4c';
             container.style.color = '#ffffff';
             container.style.fontSize = '20px';
             container.style.opacity = '1';
