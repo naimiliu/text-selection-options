@@ -270,6 +270,7 @@ console.log("selectedText", selectedText);
                 if (selectedText.length > 0) {
                     // 顯示自定義選單
                     toolbox.classList.add("show");
+                    toolbox.style.display = 'flex';
                     const rect = selection.getRangeAt(0).getBoundingClientRect();
                     toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
                     toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
