@@ -116,7 +116,7 @@
                 background: white; 
                 color: black; 
                 border: none;
-                border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
+                border-radius: 0 0 8px 8px;
                 padding: 20px 12px;
                 margin: 0px;
                 font-size: 16px;
@@ -225,7 +225,7 @@
             if(isFirstDisplay) {
                 isFirstDisplay = false;
                 pinyinDisplay.style.left = `${toolbox.offsetLeft + toolbox.offsetWidth + 10}px`;
-                pinyinDisplay.style.top = `${toolbox.offsetRight}px`;
+                pinyinDisplay.style.top = `${toolbox.offsetTop}px`;
             }
         });
         // 拼音事件監聽
