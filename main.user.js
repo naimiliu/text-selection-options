@@ -143,18 +143,20 @@
         `;
         shadow.appendChild(pinyinDisplay);
 
-        const showMessage = (msg, options={s:10, x:window.clientX, y:window.clientY}) => {
+        const showMessage = (msg, options={s:5, x:window.clientX, y:window.clientY}) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
             container.style.left = options.x;
             container.style.top = options.y;
             container.style.padding = '15px';
+            container.style.borderRadius = '8px';
             container.style.background = '#221e1e';
             container.style.color = '#ffffff';
+            container.style.fontSize = '24px';
             container.textContent = msg;
             shadow.append(container);
             setTimeout(() => {
-                //shadow.removeChild(container);
+                shadow.removeChild(container);
             },options.s*1000);
         };
 
@@ -268,11 +270,9 @@
 
                 // 將選取內容轉為純文字並去除前後多餘空白
                 selectedText = selection.toString().trim();
-console.log("selectedText", selectedText);
                 if (selectedText.length > 0) {
                     // 顯示自定義選單
                     toolbox.classList.add("show");
-                    toolbox.style.display = 'flex';
                     const rect = selection.getRangeAt(0).getBoundingClientRect();
                     toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
                     toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
@@ -280,10 +280,8 @@ console.log("selectedText", selectedText);
                     refreshPinyinDisplayContent(selectedText);
                 }
                 else {
-                    /*
                     toolbox.classList.remove("show");
                     pinyinDisplay.classList.remove("show");
-                    */
                 }
 
             }, 100);
