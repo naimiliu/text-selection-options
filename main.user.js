@@ -1,18 +1,17 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.13.006
+// @version      1.0.14
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
 // @match        https://*/*
 // @exclude      *://*.bankchb.com/*
-// @grant        none
+// @grant        GM_xmlhttpRequest
 // @run-at       document-end
 // @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
 // @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
-
 // ==/UserScript==
 /* global pinyinPro */
 
@@ -82,49 +81,20 @@
             #toolbox button:hover {
                 color: #0056b3;
             }
-            #pinyin-display {
+            #popup {
                 display: none; position: fixed; 
                 font-family: "Microsoft JhengHei", Arial, sans-serif; 
-                min-width: 250px; max-width: 400px; 
-                background: #fff; border: 2px solid #0056b3; 
-                border-radius: 8px; padding: 0px; z-index: 2147483647; 
+                width: 400px; height: auto;
+                background: white; border: 1px solid #ccc;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; z-index: 2147483647;
                 pointer-events: auto;
             }  
-            #pinyin-display.show { display: block; }
-            #pinyin-display button {
-                position: absolute;
-                top: 3px; right: 10px;
-                background: none;
-                border: none;
-                color: #fff;
-                cursor: pointer;
-                font-size: 14px;
-            }
-            #pinyin-display button:hover {
+            #popup.show { display: block; }
+            #popup button:hover {
                 color: red;
             }
-            #pinyin-display-header { 
-                display: flex; cursor: move; 
-                background: #007BFF; color: white; 
-                height: 30px; padding-left: 10px;  
-                margin: 0px;
-                border-radius: 5px 5px 0 0; 
-                align-items: center; justify-content: space-between; 
-            }
-            #pinyin-display-content {
-                font-family: "Microsoft JhengHei", sans-serif;
-                background: white; 
-                color: black; 
-                margin: 1px;
-                border-radius: 0 0 5px 5px;
-                padding: 20px 12px;
-                font-size: 16px;
-                line-height: 2.5;
-                overflow-y: scroll;
-                overflow-x: hidden;
-                max-height: 300px;
-            }
             .py-result-item {
+                line-height: 2.5;
                 padding-right: 5px;
             }
         `;
@@ -142,13 +112,21 @@
         `;
         shadow.appendChild(toolbox);
 
-        const pinyinDisplay = document.createElement("div");
-        pinyinDisplay.id = "pinyin-display";
-        pinyinDisplay.innerHTML = `
-            <div id="pinyin-display-header"><span id="pinyin-display-title" style="padding:10px;">pinyin</span><button id="close-pinyin-display">X</button></div>
-            <div id="pinyin-display-content"></div>
+        const popup = document.createElement("div");
+        popup.id = "popup";
+        popup.innerHTML = `
+            <div id="popup-header" style="background: #f1f3f4; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;cursor:move;">
+               <span id="popup-title" style="font-size: 14px; font-weight: bold; color: #5f6368;">...</span>
+               <button id="close-popup" style="border: none; background: transparent; cursor: pointer; font-size: 16px;">X</button>
+            </div>
+            <div id="popup-result" style="padding: 15px; font-size: 20px; min-height: 40px; max-height: 220px; overflow-y: auto; overflow-x: hidden; line-height: 1.5; word-break: break-word;">Opps!</div>
         `;
-        shadow.appendChild(pinyinDisplay);
+        shadow.appendChild(popup);
+        const popupHeader = popup.querySelector("#popup-header");
+        const popupTitle = popup.querySelector("#popup-title");
+        const closePopup = popup.querySelector("#close-popup");
+        const popupResult = popup.querySelector("#popup-result");
+
 
         const showMessage = (msg, centerX, centerY) => {
             const container = document.createElement("div");
@@ -185,9 +163,11 @@
             }, 2000); // 顯示 2 秒後開始縮小淡出
         };
 
-
-        const refreshPinyinDisplayContent = (text) => {
-            const sentences = text.split(/([。？！；…\n\r]|\,\s*)/g)
+        let popupType = null;
+        const loadPopupResult = (text) => {
+            if ( !popupType ) return;
+            if ( popupType === '拼音' ) {
+                const sentences = text.split(/([。？！；…\n\r]|\,\s*)/g)
                 .map(s => s.trim())
                 .filter(s => s.length > 0)
                 .reduce((acc, current) => {
@@ -199,12 +179,36 @@
                     }
                     return acc;
                 }, []);
-            let pinyinHtml = "";
-            sentences.forEach(sentence => {
-                pinyinHtml += html(sentence) + "<br>";
-            });
-            pinyinDisplay.querySelector("#pinyin-display-content").innerHTML = pinyinHtml;
+                let pinyinHtml = "";
+                sentences.forEach(sentence => {
+                    pinyinHtml += html(sentence) + "<br>";
+                });
+                popupResult.innerHTML = pinyinHtml;
+            }
+            else if( popupType === '翻譯') {
+                const targetLang = /[\u4e00-\u9fa5]/.test(selectedText) ? 'en' : 'zh-TW';
+                const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&dt=bd&q=${encodeURIComponent(text)}`;
+                GM_xmlhttpRequest({
+                    method: "GET",
+                    url: apiUrl,
+                    onload: function(response) {
+                        const data = JSON.parse(response.responseText);
+                        if (data && data[0]) {
+                            let translatedResult = "";
+                            data[0].forEach(row => {
+                                if (row[0]) translatedResult += row[0];
+                            });
+
+                            popupResult.innerText = translatedResult;
+                        }
+                        else {
+                            popupResult.innerText = '翻譯出錯';
+                        }
+                    }
+                });
+            }
         }
+
 
 
         // 工具箱事件監聽
@@ -228,34 +232,53 @@
             speaker.speak(selectedText);
         });
         // --- 翻譯
-        toolbox.querySelector("#option4").addEventListener("click", () => {
+        toolbox.querySelector("#option4").addEventListener("click", (e) => {
+            /* --- 開新視窗
             const query = encodeURIComponent(selectedText);
 
             // 有中文則翻譯成英文，沒有中文則翻譯成中文
             const targetLang = /[\u4e00-\u9fa5]/.test(selectedText) ? 'en' : 'zh-TW';
+            const translateUrl = `https://translate.google.com/?sl=auto&tl=${targetLang}&op=translate&text=${query}`;
             window.open(`https://translate.google.com/?sl=auto&tl=${targetLang}&op=translate&text=${query}`, '_blank');
+            --- */
+
+            // 彈窗
+            if ( popup.classList.contains("show") && popupType === '翻譯') {
+                popup.classList.remove("show");
+                return;
+            }
+            popupType = '翻譯';
+            popup.classList.add("show");
+            popupTitle.innerText = "Google 翻譯";
+            if(isFirstDisplay) {
+                isFirstDisplay = false;
+                popup.style.left = `${e.pageX + 10}px`;
+                popup.style.top = `${e.pageY + 10}px`;
+            }
         });
         // --- 拼音
         toolbox.querySelector("#option5").addEventListener("click", (e) => {
-            if ( pinyinDisplay.classList.contains("show") ) {
-                pinyinDisplay.classList.remove("show");
+            if ( popup.classList.contains("show") && popupType === '拼音') {
+                popup.classList.remove("show");
                 return;
             }
-            pinyinDisplay.classList.add("show");
+            popupType = '拼音';
+            popup.classList.add("show");
+            popupTitle.innerText = '拼音';
             if(isFirstDisplay) {
                 isFirstDisplay = false;
-                pinyinDisplay.style.left = `${toolbox.offsetLeft + toolbox.offsetWidth + 10}px`;
-                pinyinDisplay.style.top = `${toolbox.offsetTop}px`;
+                popup.style.left = `${e.pageX + 10}px`;
+                popup.style.top = `${e.pageY + 10}px`;
             }
         });
-        // 拼音事件監聽
-        // --- 關閉拼音
-        pinyinDisplay.querySelector("#close-pinyin-display").addEventListener("click", () => {
-            pinyinDisplay.classList.remove("show");
+        // 彈窗事件監聽
+        // --- 關閉彈窗
+        closePopup.addEventListener("click", () => {
+            popup.classList.remove("show");
         });
 
         //--- 拖動彈窗
-        pinyinDisplay.querySelector("#pinyin-display-header").addEventListener("mousedown", e => {
+        popupHeader.addEventListener("mousedown", e => {
             e.preventDefault();
 
             // 暫存當前的文字選取範圍，避免拖動過程中選取消失
@@ -265,7 +288,7 @@
             }
 
             isDragging = true;
-            const rect = pinyinDisplay.getBoundingClientRect();
+            const rect = popup.getBoundingClientRect();
             dragOffsetX = e.clientX - rect.left;
             dragOffsetY = e.clientY - rect.top;
         });
@@ -275,8 +298,8 @@
             // 移動時防止滑鼠選取到畫面上的其他文字
             e.preventDefault();
 
-            pinyinDisplay.style.left = `${e.clientX - dragOffsetX}px`;
-            pinyinDisplay.style.top = `${e.clientY - dragOffsetY}px`;
+            popup.style.left = `${e.clientX - dragOffsetX}px`;
+            popup.style.top = `${e.clientY - dragOffsetY}px`;
 
             // 在移動過程中，不斷強制將選取狀態補回來
             if (savedSelection) {
@@ -285,7 +308,7 @@
                 selection.addRange(savedSelection);
             }
         });
-        pinyinDisplay.querySelector("#pinyin-display-header").addEventListener("mouseup", e => {
+        popupHeader.addEventListener("mouseup", e => {
             e.preventDefault();
             e.stopPropagation();
             isDragging = false;
@@ -304,12 +327,12 @@
                     const rect = selection.getRangeAt(0).getBoundingClientRect();
                     toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
                     toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
-                    // 更新彈窗內容
-                    refreshPinyinDisplayContent(selectedText);
+                    loadPopupResult(selectedText);
                 }
                 else {
+                    if (toolbox.contains(e.target) || popup.contains(e.target)) return;
                     toolbox.classList.remove("show");
-                    pinyinDisplay.classList.remove("show");
+                    popup.classList.remove("show");
                 }
 
             }, 100);
