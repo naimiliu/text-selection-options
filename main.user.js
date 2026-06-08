@@ -202,7 +202,7 @@
                                     // \w+'?\w* 代表英文單字(含don't), [\u4e00-\u9fa5] 代表中文字
                                     const tokens = rawLine.split(/(\w+'?\w*|[\u4e00-\u9fa5]|\s+)/g);
                                     tokens.forEach(token => {
-                                        if (!token) return;
+                                        //if (!token) return;
                                         // 只要不是純空白或換行，就用 span 包起來，並加上一個識別 class
                                         if (token.trim().length > 0) {
                                             translatedResult += `<span class="hover-word">${token}</span>`;
