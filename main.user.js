@@ -387,7 +387,7 @@
                 speakTimeout = null;
             }
             speakTimeout = setTimeout(() => {
-                const targetText = getWordUnderMouse(e, shadow);
+                const targetText = getWordUnderMouse(e, host);
                 console.log('text=', targetText);
                 if (targetText && targetText.length >= 1) {
                     speaker.speak(targetText);
@@ -408,24 +408,6 @@
                 speakTimeout = null;
             }
 
-        });
-
-        document.addEventListener("mousemove", e=> {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('enter');
-            if(speakTimeout) {
-                clearTimeout(speakTimeout);
-                speakTimeout = null;
-            }
-            speakTimeout = setTimeout(() => {
-                const targetText = getWordUnderMouse(e, document);
-                console.log('text=', targetText);
-                if (targetText && targetText.length >= 1) {
-                    speaker.speak(targetText);
-                    speakTimeout = null;
-                }
-            }, 1000);               
         });
 
         document.addEventListener("mouseup", (e) => {
