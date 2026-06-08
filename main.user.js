@@ -10,8 +10,8 @@
 // @grant        GM_xmlhttpRequest
 // @run-at       document-end
 // @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
-// @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/test/main.user.js
-// @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/test/main.user.js
+// @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
+// @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
 // ==/UserScript==
 /* global pinyinPro */
 
