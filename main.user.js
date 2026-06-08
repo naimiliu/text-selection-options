@@ -348,13 +348,6 @@
             }
 
         });
-        popupResult.addEventListener('mouseleave', () => {
-            if (speakTimeout) {
-                clearTimeout(speakTimeout);
-                speakTimeout = null;
-            }
-
-        });
 
         document.addEventListener("mouseup", (e) => {
             setTimeout(() => {
