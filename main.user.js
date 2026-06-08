@@ -119,7 +119,7 @@
                <span id="popup-title" style="font-size: 14px; font-weight: bold; color: #5f6368;">...</span>
                <button id="close-popup" style="border: none; background: transparent; cursor: pointer; font-size: 16px;">X</button>
             </div>
-            <div id="popup-result" style="padding: 15px; font-size: 20px; min-height: 40px; max-height: 220px; overflow-y: auto; overflow-x: hidden; line-height: 1.5; word-break: break-word;">wait...</div>
+            <div id="popup-result" style="padding: 15px; font-size: 20px; min-height: 40px; max-height: 220px; overflow-y: auto; overflow-x: hidden; line-height: 1.5; word-break: break-word;"><span class="hover-word">loading</span></div>
         `;
         shadow.appendChild(popup);
         const popupHeader = popup.querySelector("#popup-header");
