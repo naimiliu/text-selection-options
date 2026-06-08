@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.8
+// @version      1.0.15.9
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -131,8 +131,8 @@
         const showMessage = (msg, centerX, centerY) => {
             const container = document.createElement("div");
             container.style.position = 'fixed';
-            container.style.left = `${centerX??'50%'}`;
-            container.style.top = `${centerY??'50%'}`;;
+            container.style.left = `${centerX ?? '50%'}`;
+            container.style.top = `${centerY ?? '50%'}`;;
             // ⭐ 初始狀態：置中，並且大小是正常 1 倍 (scale(1))
             container.style.transform = 'translate(-50%, -50%) scale(1)';
             container.style.padding = '15px';
@@ -141,20 +141,20 @@
             container.style.color = '#ffffff';
             container.style.fontSize = '20px';
             container.style.opacity = '1';
-            
+
             // ⭐ 核心修改：將 opacity 改成 all，這樣透明度和大小變動都會有 0.3 秒的流暢動畫
             // （縮小動畫建議用 0.3s ~ 0.5s，1s 會顯得有點太慢、太拖沓）
             container.style.transition = 'all 0.3s ease-out';
-            
-            container.style.pointerEvents = 'none'; 
+
+            container.style.pointerEvents = 'none';
             container.textContent = msg;
             shadow.append(container);
 
             setTimeout(() => {
-                container.style.opacity = '0'; 
+                container.style.opacity = '0';
                 // ⭐ 核心修改：保持置中，但尺寸縮小到 0.8 倍
-                container.style.transform = 'translate(-50%, -50%) scale(0.5)'; 
-                
+                container.style.transform = 'translate(-50%, -50%) scale(0.5)';
+
                 // 因為動畫改成了 0.3 秒 (0.3s)，所以這裡移除元件的等待時間也同步改成 300 毫秒
                 setTimeout(() => {
                     shadow.removeChild(container);
@@ -165,41 +165,56 @@
 
         let popupType = null;
         const loadPopupResult = (text) => {
-            if ( !popupType ) return;
-            if ( popupType === '拼音' ) {
+            if (!popupType) return;
+            if (popupType === '拼音') {
                 const sentences = text.split(/([。？！；…\n\r]|\,\s*)/g)
-                .map(s => s.trim())
-                .filter(s => s.length > 0)
-                .reduce((acc, current) => {
-                    const punctuations = ["。", "？", "！", "；", "…", ",", "”", "“", "‘", "’"];
-                    if (punctuations.includes(current) && acc.length > 0) {
-                        acc[acc.length - 1] += current;
-                    } else {
-                        acc.push(current);
-                    }
-                    return acc;
-                }, []);
+                    .map(s => s.trim())
+                    .filter(s => s.length > 0)
+                    .reduce((acc, current) => {
+                        const punctuations = ["。", "？", "！", "；", "…", ",", "”", "“", "‘", "’"];
+                        if (punctuations.includes(current) && acc.length > 0) {
+                            acc[acc.length - 1] += current;
+                        } else {
+                            acc.push(current);
+                        }
+                        return acc;
+                    }, []);
                 let pinyinHtml = "";
                 sentences.forEach(sentence => {
                     pinyinHtml += html(sentence) + "<br>";
                 });
                 popupResult.innerHTML = pinyinHtml;
             }
-            else if( popupType === '翻譯') {
+            else if (popupType === '翻譯') {
                 const targetLang = /[\u4e00-\u9fa5]/.test(selectedText) ? 'en' : 'zh-TW';
                 const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&dt=bd&q=${encodeURIComponent(text)}`;
                 GM_xmlhttpRequest({
                     method: "GET",
                     url: apiUrl,
-                    onload: function(response) {
+                    onload: function (response) {
                         const data = JSON.parse(response.responseText);
                         if (data && data[0]) {
                             let translatedResult = "";
                             data[0].forEach(row => {
-                                if (row[0]) translatedResult += row[0];
+                                if (row[0]) {
+                                    const rawLine = row[0];
+                                    // 使用正則表達式，把英文單字或個別中文字切開
+                                    // \w+'?\w* 代表英文單字(含don't), [\u4e00-\u9fa5] 代表中文字
+                                    const tokens = rawLine.split(/(\w+'?\w*|[\u4e00-\u9fa5]|\s+)/g);
+
+                                    tokens.forEach(token => {
+                                        if (!token) return;
+                                        // 只要不是純空白或換行，就用 span 包起來，並加上一個識別 class
+                                        if (token.trim().length > 0) {
+                                            translatedResult += `<span class="hover-word">${token}</span>`;
+                                        } else {
+                                            translatedResult += token; // 空白或換行直接保留
+                                        }
+                                    });
+                                }
                             });
 
-                            popupResult.innerText = translatedResult;
+                            popupResult.innerHtml = translatedResult;
                         }
                         else {
                             popupResult.innerText = '翻譯出錯';
@@ -209,7 +224,7 @@
             }
         }
 
-        const getWordUnderMouse = (e, root=document) => {
+        const getWordUnderMouse = (e, root = document) => {
             let x = e.clientX;
             let y = e.clientY;
             let range, textNode, offset;
@@ -227,7 +242,7 @@
                 if (!range) return "";
                 textNode = range.startContainer;
                 offset = range.startOffset;
-            } 
+            }
             //---*/
             else {
                 return "1";
@@ -279,7 +294,7 @@
             navigator.clipboard.writeText(selectedText).then(() => {
                 const selection = window.getSelection()
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
-                showMessage("Copied!", `${rect.left + rect.width / 2}px`, `${rect.top - 30}px`);                
+                showMessage("Copied!", `${rect.left + rect.width / 2}px`, `${rect.top - 30}px`);
                 selection.removeAllRanges();
                 toolbox.classList.remove("show");
             });
@@ -305,14 +320,14 @@
             --- */
 
             // 彈窗
-            if ( popup.classList.contains("show") && popupType === '翻譯') {
+            if (popup.classList.contains("show") && popupType === '翻譯') {
                 popup.classList.remove("show");
                 return;
             }
             popupType = '翻譯';
             popup.classList.add("show");
             popupTitle.innerText = "Google 翻譯";
-            if(isFirstDisplay) {
+            if (isFirstDisplay) {
                 isFirstDisplay = false;
                 popup.style.left = `${e.pageX + 10}px`;
                 popup.style.top = `${e.pageY + 10}px`;
@@ -320,14 +335,14 @@
         });
         // --- 拼音
         toolbox.querySelector("#option5").addEventListener("click", (e) => {
-            if ( popup.classList.contains("show") && popupType === '拼音') {
+            if (popup.classList.contains("show") && popupType === '拼音') {
                 popup.classList.remove("show");
                 return;
             }
             popupType = '拼音';
             popup.classList.add("show");
             popupTitle.innerText = '拼音';
-            if(isFirstDisplay) {
+            if (isFirstDisplay) {
                 isFirstDisplay = false;
                 popup.style.left = `${e.pageX + 10}px`;
                 popup.style.top = `${e.pageY + 10}px`;
@@ -378,32 +393,37 @@
 
         //--- 點你就唸
         let speakTimeout = null;
-        popupResult.addEventListener("mousemove", e=> {
+        popupResult.addEventListener("mousemove", e => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('enter');
-            if(speakTimeout) {
+
+            // 檢查滑鼠當下指著的，是不是我們剛剛包裝好的文字標籤
+            if (!e.target.classList.contains('hover-word')) return;
+
+            if (speakTimeout) {
                 clearTimeout(speakTimeout);
-                speakTimeout = null;
             }
+
             speakTimeout = setTimeout(() => {
-                const targetText = getWordUnderMouse(e, host);
-                console.log('text=', targetText);
+                // 直接從元件精準抓字，百分之百成功，完全無視 Shadow DOM 跨域限制！
+                const targetText = e.target.innerText.trim();
+
+                console.log('精準抓字 =', targetText);
                 if (targetText && targetText.length >= 1) {
                     speaker.speak(targetText);
                     speakTimeout = null;
                 }
-            }, 1000);               
+            }, 1000); // 依據您的腳本設定，滑鼠停留在字上面 1 秒後觸發
         });
         popupResult.addEventListener('mouseleave', () => {
-            if(speakTimeout) {
+            if (speakTimeout) {
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
 
         });
         popupResult.addEventListener('mouseleave', () => {
-            if(speakTimeout) {
+            if (speakTimeout) {
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
