@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.2
+// @version      1.0.15.3
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -215,8 +215,8 @@
             let range, textNode, offset;
 
             // 1. 取得滑鼠座標下的文字節點與精確字元位置 (相容所有主流瀏覽器)
-            if (document.caretPositionFromPoint) {
-                range = document.caretPositionFromPoint(x, y);
+            if (host.caretPositionFromPoint) {
+                range = host.caretPositionFromPoint(x, y);
                 if (!range) return "";
                 textNode = range.offsetNode;
                 offset = range.offset;
@@ -230,14 +230,14 @@
             } 
             ---*/
             else {
-                return "";
+                return "1";
             }
 
             // 檢查抓到的是否為純文字節點
-            if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return "";
+            if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return "2";
 
             const text = textNode.textContent;
-            if (!text || offset >= text.length) return "";
+            if (!text || offset >= text.length) return "3";
 
             // 2. 取得滑鼠當下指著的那「一個」字元
             const clickedChar = text.charAt(offset);
