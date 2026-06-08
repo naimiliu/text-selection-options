@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.4
+// @version      1.0.15.5
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -386,8 +386,8 @@
                 speakTimeout = null;
                 speakTimeout.clearTimeout();
             }
-            console.log('text=', targetText);
             const targetText = getWordUnderMouse(e);
+            console.log('text=', targetText);
             if (targetText && targetText.length >= 1) {
                 speakTimeout = setTimeout(() => {
                     speaker.speak(targetText);
