@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15
+// @version      1.0.15.001
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -377,12 +377,20 @@
         });
 
         //--- 點你就唸
-        popupResult.addEventListener("mouseup", e=> {
+        let speakTimeout = null;
+        popupResult.addEventListener("mousemove", e=> {
             e.preventDefault();
             e.stopPropagation();
+            
+            if(speakTimeout) {
+                speakTimeout = null;
+                speakTimeout.clearTimeout();
+            }
             const targetText = getWordUnderMouse(e);
             if (targetText && targetText.length >= 1) {
-                speaker.speak(targetText);
+                speakTimeout = setTimeout(() => {
+                    speaker.speak(targetText);
+                }, 1000);               
             }
         });
 
