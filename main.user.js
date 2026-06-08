@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.6
+// @version      1.0.15.7
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -383,7 +383,7 @@
             e.stopPropagation();
             console.log('enter');
             if(speakTimeout) {
-                speakTimeout.clearTimeout();
+                clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
             speakTimeout = setTimeout(() => {
