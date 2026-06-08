@@ -197,12 +197,10 @@
                             let translatedResult = "";
                             data[0].forEach(row => {
                                 if (row & row[0]) {
-                                    const rawLine = row[0];
-console.log("rawLine:",rawLine);
+                                    const rawLine = row[0].trim();
                                     // 使用正則表達式，把英文單字或個別中文字切開
                                     // \w+'?\w* 代表英文單字(含don't), [\u4e00-\u9fa5] 代表中文字
                                     const tokens = rawLine.split(/(\w+'?\w*|[\u4e00-\u9fa5]|\s+)/g);
-console.log(tokens);
                                     tokens.forEach(token => {
                                         if (!token) return;
                                         // 只要不是純空白或換行，就用 span 包起來，並加上一個識別 class
@@ -211,6 +209,7 @@ console.log(tokens);
                                         } else {
                                             translatedResult += token; // 空白或換行直接保留
                                         }
+console.log(token);
                                     });
                                 }
                             });
