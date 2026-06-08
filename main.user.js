@@ -386,9 +386,9 @@
                 speakTimeout = null;
                 speakTimeout.clearTimeout();
             }
+            console.log('text=', targetText);
             const targetText = getWordUnderMouse(e);
             if (targetText && targetText.length >= 1) {
-                console.log(targetText);
                 speakTimeout = setTimeout(() => {
                     speaker.speak(targetText);
                 }, 1000);               
