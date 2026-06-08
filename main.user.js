@@ -209,21 +209,21 @@
             }
         }
 
-        const getWordUnderMouse = (e) => {
+        const getWordUnderMouse = (e, root=document) => {
             let x = e.clientX;
             let y = e.clientY;
             let range, textNode, offset;
 
             // 1. 取得滑鼠座標下的文字節點與精確字元位置 (相容所有主流瀏覽器)
-            if (document.caretPositionFromPoint) {
-                range = document.caretPositionFromPoint(x, y);
+            if (root.caretPositionFromPoint) {
+                range = root.caretPositionFromPoint(x, y);
                 if (!range) return "";
                 textNode = range.offsetNode;
                 offset = range.offset;
             }
             //--- WebKit 舊版瀏覽器   
-            else if (document.caretRangeFromPoint) { // WebKit 舊版瀏覽器
-                range = document.caretRangeFromPoint(x, y);
+            else if (root.caretRangeFromPoint) { // WebKit 舊版瀏覽器
+                range = root.caretRangeFromPoint(x, y);
                 if (!range) return "";
                 textNode = range.startContainer;
                 offset = range.startOffset;
@@ -387,7 +387,7 @@
                 speakTimeout = null;
             }
             speakTimeout = setTimeout(() => {
-                const targetText = getWordUnderMouse(e);
+                const targetText = getWordUnderMouse(e, shadow);
                 console.log('text=', targetText);
                 if (targetText && targetText.length >= 1) {
                     speaker.speak(targetText);
