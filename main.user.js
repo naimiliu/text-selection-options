@@ -377,14 +377,14 @@
         });
 
         //--- 點你就唸
-        popupResult.addEventListener("mouseup"), e=> {
+        popupResult.addEventListener("mouseup", e=> {
             e.preventDefault();
             e.stopPropagation();
             const targetText = getWordUnderMouse(e);
             if (targetText && targetText.length >= 1) {
                 speaker.speak(targetText);
             }
-        }
+        });
 
         document.addEventListener("mouseup", (e) => {
             setTimeout(() => {
