@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.11
+// @version      1.0.15.12
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -44,8 +44,7 @@
         let selectedText = "";
         let isSelecting = false;
         let savedSelection = null; // 用來暫存文字選取範圍
-        // ---- 拼音視窗相關變數
-        let isFirstDisplay = true;
+        // ---- 彈窗相關變數
         let isDragging = false;
         let dragOffsetX = 0;
         let dragOffsetY = 0;
@@ -166,6 +165,7 @@
         let popupType = null;
         const loadPopupResult = (text) => {
             if (!popupType) return;
+
             if (popupType === '拼音') {
                 const sentences = text.split(/([。？！；…\n\r]|\,\s*)/g)
                     .map(s => s.trim())
@@ -181,7 +181,7 @@
                     }, []);
                 let pinyinHtml = "";
                 sentences.forEach(sentence => {
-                    pinyinHtml += html(sentence) + "<br>";
+                    pinyinHtml += "<div style='text-indent:2em'>" + html(sentence) + "</div>";
                 });
                 popupResult.innerHTML = pinyinHtml;
             }
@@ -196,9 +196,8 @@
                         if (data && data[0]) {
                             let translatedResult = "";
                             data[0].forEach(row => {
-                                if (row & row[0]) {
-                                    const rawLine = row[0];
-console.log('rowLine:',rawLine)
+                                if (row[0]) {
+                                    const rawLine = row[0].trim();
                                     // 使用正則表達式，把英文單字或個別中文字切開
                                     // \w+'?\w* 代表英文單字(含don't), [\u4e00-\u9fa5] 代表中文字
                                     const tokens = rawLine.split(/(\w+'?\w*|[\u4e00-\u9fa5]|\s+)/g);
@@ -210,14 +209,13 @@ console.log('rowLine:',rawLine)
                                         } else {
                                             translatedResult += token; // 空白或換行直接保留
                                         }
-console.log('token', token);
                                     });
                                 }
                             });
-                            popupResult.innerHtml = translatedResult;
+                            popupResult.innerHTML = translatedResult;
                         }
                         else {
-                            popupResult.innerHtml = '翻譯出錯';
+                            popupResult.innerHTML = '翻譯出錯';
                         }
                     }
                 });
@@ -263,11 +261,8 @@ console.log('token', token);
             popupType = '翻譯';
             popup.classList.add("show");
             popupTitle.innerText = "Google 翻譯";
-            if (isFirstDisplay) {
-                isFirstDisplay = false;
-                popup.style.left = `${e.pageX + 10}px`;
-                popup.style.top = `${e.pageY + 10}px`;
-            }
+            popup.style.left = `${e.pageX + 10}px`;
+            popup.style.top = `${e.pageY + 10}px`;
         });
         // --- 拼音
         toolbox.querySelector("#option5").addEventListener("click", (e) => {
@@ -278,11 +273,8 @@ console.log('token', token);
             popupType = '拼音';
             popup.classList.add("show");
             popupTitle.innerText = '拼音';
-            if (isFirstDisplay) {
-                isFirstDisplay = false;
-                popup.style.left = `${e.pageX + 10}px`;
-                popup.style.top = `${e.pageY + 10}px`;
-            }
+            popup.style.left = `${e.pageX + 10}px`;
+            popup.style.top = `${e.pageY + 10}px`;
         });
         // 彈窗事件監聽
         // --- 關閉彈窗
@@ -340,16 +332,14 @@ console.log('token', token);
                 clearTimeout(speakTimeout);
             }
 
-            speakTimeout = setTimeout(() => {
+            const targetText = e.target.innerText.trim();
+            if (targetText && targetText.length >= 1) {
+                speakTimeout = setTimeout(() => {
                 // 直接從元件精準抓字，百分之百成功，完全無視 Shadow DOM 跨域限制！
-                const targetText = e.target.innerText.trim();
-
-                console.log('精準抓字 =', targetText);
-                if (targetText && targetText.length >= 1) {
                     speaker.speak(targetText);
                     speakTimeout = null;
-                }
-            }, 1000); // 依據您的腳本設定，滑鼠停留在字上面 1 秒後觸發
+                }, 1000); // 依據您的腳本設定，滑鼠停留在字上面 1 秒後觸發
+            }
         });
         popupResult.addEventListener('mouseleave', () => {
             if (speakTimeout) {
