@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.5
+// @version      1.0.15.6
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -383,16 +383,17 @@
             e.stopPropagation();
             console.log('enter');
             if(speakTimeout) {
-                speakTimeout = null;
                 speakTimeout.clearTimeout();
+                speakTimeout = null;
             }
-            const targetText = getWordUnderMouse(e);
-            console.log('text=', targetText);
-            if (targetText && targetText.length >= 1) {
-                speakTimeout = setTimeout(() => {
+            speakTimeout = setTimeout(() => {
+                const targetText = getWordUnderMouse(e);
+                console.log('text=', targetText);
+                if (targetText && targetText.length >= 1) {
                     speaker.speak(targetText);
-                }, 1000);               
-            }
+                    speakTimeout = null;
+                }
+            }, 1000);               
         });
 
         document.addEventListener("mouseup", (e) => {
