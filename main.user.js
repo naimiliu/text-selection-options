@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.3
+// @version      1.0.15.4
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -10,8 +10,8 @@
 // @grant        GM_xmlhttpRequest
 // @run-at       document-end
 // @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
-// @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
-// @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
+// @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/test/main.user.js
+// @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/test/main.user.js
 // ==/UserScript==
 /* global pinyinPro */
 
