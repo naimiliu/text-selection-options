@@ -348,14 +348,7 @@
             }
 
         });
-        popupResult.addEventListener('mouseleave', () => {
-            if (speakTimeout) {
-                clearTimeout(speakTimeout);
-                speakTimeout = null;
-            }
-
-        });
-
+        
         document.addEventListener("mouseup", (e) => {
             setTimeout(() => {
                 // 取得目前選取的 Selection 物件
