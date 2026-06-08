@@ -217,76 +217,12 @@
                             popupResult.innerHtml = translatedResult;
                         }
                         else {
-                            popupResult.innerText = '翻譯出錯';
+                            popupResult.innerHtml = '翻譯出錯';
                         }
                     }
                 });
             }
         }
-
-        const getWordUnderMouse = (e, root = document) => {
-            let x = e.clientX;
-            let y = e.clientY;
-            let range, textNode, offset;
-
-            // 1. 取得滑鼠座標下的文字節點與精確字元位置 (相容所有主流瀏覽器)
-            if (root.caretPositionFromPoint) {
-                range = root.caretPositionFromPoint(x, y);
-                if (!range) return "";
-                textNode = range.offsetNode;
-                offset = range.offset;
-            }
-            //--- WebKit 舊版瀏覽器   
-            else if (root.caretRangeFromPoint) { // WebKit 舊版瀏覽器
-                range = root.caretRangeFromPoint(x, y);
-                if (!range) return "";
-                textNode = range.startContainer;
-                offset = range.startOffset;
-            }
-            //---*/
-            else {
-                return "1";
-            }
-
-            // 檢查抓到的是否為純文字節點
-            if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return "2";
-
-            const text = textNode.textContent;
-            if (!text || offset >= text.length) return "3";
-
-            // 2. 取得滑鼠當下指著的那「一個」字元
-            const clickedChar = text.charAt(offset);
-
-            // 3. 判斷該字元是否為中文字 (包含中文標點、中日韓字元範圍)
-            // 範圍說明：\u4e00-\u9fa5 是主要漢字範圍
-            const isChinese = /[\u4e00-\u9fa5]/.test(clickedChar);
-
-            if (isChinese) {
-                // 中文邏輯：直接回傳滑鼠下的這一個中文字
-                return clickedChar.trim();
-            } else {
-                // 英文邏輯：如果指著英文/數字，需要向左和向右延伸，抓出「完整單字」
-                let start = offset;
-                let end = offset;
-
-                // 定義合法的英文單字字元 (英文字母、數字、以及常見的縮寫單引號如 don't)
-                const isWordChar = (char) => /[a-zA-Z0-9']/.test(char);
-
-                // 向左尋找單字開頭
-                while (start > 0 && isWordChar(text.charAt(start - 1))) {
-                    start--;
-                }
-                // 向右尋找單字結尾
-                while (end < text.length && isWordChar(text.charAt(end))) {
-                    end++;
-                }
-
-                // 擷取並回傳完整英文單字
-                const word = text.slice(start, end).trim();
-                return word;
-            }
-        }
-
 
         // 工具箱事件監聽
         // --- 複製
