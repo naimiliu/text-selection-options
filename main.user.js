@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.7
+// @version      1.0.15.8
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -215,8 +215,8 @@
             let range, textNode, offset;
 
             // 1. 取得滑鼠座標下的文字節點與精確字元位置 (相容所有主流瀏覽器)
-            if (host.caretPositionFromPoint) {
-                range = host.caretPositionFromPoint(x, y);
+            if (popupResult.caretPositionFromPoint) {
+                range = popupResult.caretPositionFromPoint(x, y);
                 if (!range) return "";
                 textNode = range.offsetNode;
                 offset = range.offset;
@@ -394,6 +394,13 @@
                     speakTimeout = null;
                 }
             }, 1000);               
+        });
+        popupResult.addEventListener('mouseleave', () => {
+            if(speakTimeout) {
+                clearTimeout(speakTimeout);
+                speakTimeout = null;
+            }
+
         });
 
         document.addEventListener("mouseup", (e) => {
