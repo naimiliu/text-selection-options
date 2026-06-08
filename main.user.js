@@ -215,20 +215,20 @@
             let range, textNode, offset;
 
             // 1. 取得滑鼠座標下的文字節點與精確字元位置 (相容所有主流瀏覽器)
-            if (popupResult.caretPositionFromPoint) {
-                range = popupResult.caretPositionFromPoint(x, y);
+            if (document.caretPositionFromPoint) {
+                range = document.caretPositionFromPoint(x, y);
                 if (!range) return "";
                 textNode = range.offsetNode;
                 offset = range.offset;
             }
-            /*--- WebKit 舊版瀏覽器   
+            //--- WebKit 舊版瀏覽器   
             else if (document.caretRangeFromPoint) { // WebKit 舊版瀏覽器
                 range = document.caretRangeFromPoint(x, y);
                 if (!range) return "";
                 textNode = range.startContainer;
                 offset = range.startOffset;
             } 
-            ---*/
+            //---*/
             else {
                 return "1";
             }
