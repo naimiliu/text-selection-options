@@ -97,7 +97,7 @@
                 align-item: flex-start;
                 border-bottom: 1px solid #eee;
             }
-            #popup-translation-transalted {
+            #popup-translation-translated {
                 display: flex;
                 align-item: flex-start;
                 margin-bottom: 10px;
@@ -112,7 +112,7 @@
                 margin-right: 8px;
                 padding-top: 5px;
             }
-            #popup-translation-source p, #popup-translation-transalted p {
+            #popup-translation-source p, #popup-translation-translated p {
                 margin:0;
                 flex-grow: 1;
             }
