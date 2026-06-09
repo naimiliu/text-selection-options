@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.14
+// @version      1.0.15.15
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -92,6 +92,25 @@
             #popup button:hover {
                 color: red;
             }
+            #popup-translation-source {
+                display: flex;
+                align-item: flex-start;
+                padding: 8px;
+                border-bottom: 1px solid #eee;
+            }
+            #popup-translation-source.collapse { 
+                cursor: pointer;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            #popup-translation-source.expanded {
+                display: block;
+                overflow: visible;
+            }
+            
             .py-result-item {
                 line-height: 2.5;
                 padding-right: 5px;
@@ -206,7 +225,8 @@
                             popupResult.innerHTML = "";
                             if(source){
                                 const sourceDiv = document.createElement('div');
-                                sourceDiv.className = 'source';
+                                sourceDiv.id = 'popup-translation-source';
+                                sourceDiv.className = 'collapse';
                                 sourceDiv.appendChild(source);
                                 popupResult.appendChild(sourceDiv);
                             }
@@ -309,6 +329,15 @@
             popup.style.top = `${e.pageY + 10}px`;
         });
         // 彈窗事件監聽
+        popup.addEventListener("mouseup", e => {
+            e.stopPropagation();
+            toolbox.classList.remove("show");
+            const target = e.target.closest('#popup-translation-source');
+            if(target) {
+                this.classList.toggle('collapse');
+                this.classList.toggle('expanded');
+            }
+        });
         // --- 關閉彈窗
         closePopup.addEventListener("click", () => {
             popup.classList.remove("show");
@@ -397,7 +426,7 @@
                     loadPopupResult(selectedText);
                 }
                 else {
-                    if (toolbox.contains(e.target) || popup.contains(e.target)) return;
+                    if (toolbox.contains(e.target)) return;
                     toolbox.classList.remove("show");
                     popup.classList.remove("show");
                 }
