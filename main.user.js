@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.13
+// @version      1.0.15.14
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -199,20 +199,23 @@
                                 if (row[0]) {
                                     translated = getHoverWord(row[0].trim());
                                 }
-                                else if(row[1]) {
+                                if(row[1]) {
                                     source = getHoverWord(row[1].trim());
                                 }
                             });
                             popupResult.innerHTML = "";
-                            const sourceDiv = document.createElement('div');
-                            sourceDiv.className = 'source';
-                            sourceDiv.appendChild(source);
-                            popupResult.appendChild(source);
-
-                            const translatedDiv = document.createElement('div');
-                            translatedDiv.className = 'translated';
-                            translatedDiv.appendChild(translated);
-                            popupResult.appendChild(translated);
+                            if(source){
+                                const sourceDiv = document.createElement('div');
+                                sourceDiv.className = 'source';
+                                sourceDiv.appendChild(source);
+                                popupResult.appendChild(source);
+                            }
+                            if(translated) {
+                                const translatedDiv = document.createElement('div');
+                                translatedDiv.className = 'translated';
+                                translatedDiv.appendChild(translated);
+                                popupResult.appendChild(translated);
+                            }
                         }
                         else {
                             popupResult.textContent = '翻譯出錯';
@@ -367,7 +370,7 @@
                 // 直接從元件精準抓字，百分之百成功，完全無視 Shadow DOM 跨域限制！
                     speaker.speak(targetText);
                     speakTimeout = null;
-                }, 1000); // 依據您的腳本設定，滑鼠停留在字上面 1 秒後觸發
+                }, 500); // 依據您的腳本設定，滑鼠停留在字上面 1 秒後觸發
             }
         });
         popupResult.addEventListener('mouseleave', () => {
