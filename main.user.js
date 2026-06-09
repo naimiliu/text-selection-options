@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.15
+// @version      1.0.15.16
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -95,18 +95,19 @@
             #popup-translation-source {
                 display: flex;
                 align-item: flex-start;
-                padding: 8px;
                 border-bottom: 1px solid #eee;
             }
-            #popup-translation-source.collapse { 
+            #popup-translation-source.collapse {
                 cursor: pointer;
+            }
+            #popup-translation-source.collapse p {
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
-            #popup-translation-source.expanded {
+            #popup-translation-source.expanded p{
                 display: block;
                 overflow: visible;
             }
@@ -227,7 +228,9 @@
                                 const sourceDiv = document.createElement('div');
                                 sourceDiv.id = 'popup-translation-source';
                                 sourceDiv.className = 'collapse';
-                                sourceDiv.appendChild(source);
+                                const p =document.createElement('p');
+                                p.appendChild(source);
+                                sourceDiv.appendChild(p);
                                 popupResult.appendChild(sourceDiv);
                             }
                             if(translated) {
@@ -332,11 +335,6 @@
         popup.addEventListener("mouseup", e => {
             e.stopPropagation();
             toolbox.classList.remove("show");
-            const target = e.target.closest('#popup-translation-source');
-            if(target) {
-                this.classList.toggle('collapse');
-                this.classList.toggle('expanded');
-            }
         });
         // --- 關閉彈窗
         closePopup.addEventListener("click", () => {
@@ -408,6 +406,13 @@
                 speakTimeout = null;
             }
 
+        });
+        popuoResult.addEventListener('mouseup', () => {
+            const target = e.target.closest('#popup-translation-source');
+            if(target) {
+                this.classList.toggle('collapse');
+                this.classList.toggle('expanded');
+            }
         });
         
         document.addEventListener("mouseup", (e) => {
