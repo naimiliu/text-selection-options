@@ -208,13 +208,13 @@
                                 const sourceDiv = document.createElement('div');
                                 sourceDiv.className = 'source';
                                 sourceDiv.appendChild(source);
-                                popupResult.appendChild(source);
+                                popupResult.appendChild(sourceDiv);
                             }
                             if(translated) {
                                 const translatedDiv = document.createElement('div');
                                 translatedDiv.className = 'translated';
                                 translatedDiv.appendChild(translated);
-                                popupResult.appendChild(translated);
+                                popupResult.appendChild(translatedDiv);
                             }
                         }
                         else {
