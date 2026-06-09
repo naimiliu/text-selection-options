@@ -274,7 +274,7 @@
                                 btn.innerHTML = speakerIcon;
                                 translatedDiv.appendChild(btn);
                                 const p =document.createElement('p');
-                                p.appendChild(source);
+                                p.appendChild(translated);
                                 translatedDiv.appendChild(p);
                                 popupResult.appendChild(translatedDiv);
                             }
