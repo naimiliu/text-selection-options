@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.27
+// @version      1.0.15.28
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -45,7 +45,7 @@
         let savedSelection = null; // 用來暫存文字選取範圍
         // ---- 彈窗相關變數
         const speakerIcon = `<svg class="icon-default" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path d="M0 0h16v16H0z" fill="none" /><path fill="currentColor" d="M 11 4.536 M 4 11 H 3 a 2 2 0 0 1 -2 -2 V 7 a 2 2 0 0 1 2 -2 h 1 zM 9.293 1 c 0.39 0 0.707 0.317 0.707 0.707 v 12.586 a 0.707 0.707 0 0 1 -1.207 0.5 L 5 11 V 5 l 3.793 -3.793a.7.7 0 0 1 .5-.207" /></svg>`;
-        const speakerHoverIcon = `<svg class="icon-hover" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path d="M0 0h16v16H0z" fill="none" /><g fill="currentColor"><path d="M9.293 1c.39 0 .707.317.707.707v12.586a.707.707 0 0 1-1.207.5L5 11V5l3.793-3.793a.7.7 0 0 1 .5-.207M12 2.804a6 6 0 0 1 0 10.392l-.5-.866a5 5 0 0 0 0-8.66z" /><path d="M11 4.536a4 4 0 0 1 0 6.928l-.5-.866a3 3 0 0 0 0-5.196zM4 11H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1z" /></g></svg>`;        
+        const speakerHoverIcon = `<svg class="icon-hover" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path d="M0 0h16v16H0z" fill="none" /><path fill="currentColor" d="M12 2.804a6 6 0 0 1 0 10.392l-.5-.866a5 5 0 0 0 0-8.66zM11 4.536a4 4 0 0 1 0 6.928l-.5-.866a3 3 0 0 0 0-5.196z" /></svg>`;        
         let isDragging = false;
         let dragOffsetX = 0;
         let dragOffsetY = 0;
@@ -109,7 +109,7 @@
                 width: 24px;
                 height: 24px;
                 display: inline-block;
-                margin-right: 8px;
+                margin-right: 15px;
                 color: #f16a10;
             }
             .popup-speaker svg {
@@ -122,12 +122,6 @@
                 
             }
             .popup-speaker .icon-hover{
-                opacity: 0;
-            }
-            .popup-speaker .icon-default{
-                opacity: 1;
-            }
-            .popup-speaker:hover .icon-default{
                 opacity: 0;
             }
             .popup-speaker:hover .icon-hover{
@@ -524,7 +518,7 @@
             this.targetVoice = null;
             this.config = {
                 lang: 'zh-TW',
-                rate: 1.0,
+                rate: 0.8,
                 pitch: 1.0,
                 volume: 1.0
             };
