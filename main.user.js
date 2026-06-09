@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.28
+// @version      1.0.15.29
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -101,9 +101,9 @@
                 margin-bottom: 10px;
             }
             .popup-speaker {
-                background: transparent;
+                background: none;
                 border: none;
-                padding: 0px;
+                padding-top: 5px;
                 cursor:pointer;
                 position: relative;
                 width: 24px;
@@ -112,21 +112,33 @@
                 margin-right: 15px;
                 color: #f16a10;
             }
-            .popup-speaker svg {
-                position: absolute;
-                top: 5px; 
-                left: 0;
+            .popup-speaker .speaker-main {
                 width: 20px;
                 height: 20px;
-                transition: opacity 0.3s ease-out;
-                
             }
-            .popup-speaker .icon-hover{
-                opacity: 0;
+            .popup-speaker .speaker-waves {
+                width: 20px;
+                height: 20px;
+                opicity: 0;
+                transform: translateX(2px);
+                transition: opacity 0.2s ease;
             }
-            .popup-speaker:hover .icon-hover{
-                opacity: 1;
+            .popup-speaker:hover .icon-waves{
+                animation: wave-flash 1s infinite ease-out;
             }
+            @keyframes wave-flash {
+                0% {
+                    opacity: 0;
+                    transform: translateX(2px) scale(0.8); /* 從稍微縮小開始 */
+                }
+                30% {
+                    opacity: 1; /* 快速亮起 */
+                }
+                100% {
+                    opacity: 0; /* 慢慢淡出 */
+                    transform: translateX(6px) scale(1.2); /* 同時向右擴散放大 */
+                }
+            }                
             #popup-translation-source p, #popup-translation-translated p {
                 margin:0;
                 flex-grow: 1;
