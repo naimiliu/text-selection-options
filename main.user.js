@@ -587,6 +587,8 @@
 
             if (!longText) return;
 
+            const textLang = /[\u4e00-\u9fa5]/.test(longText) ? 'zh-TW' : 'en-US';
+
             // 2. 切割文字
             const sentences = this._splitText(longText);
             console.log("切片後的句子：", sentences);
@@ -596,22 +598,23 @@
                 const utterance = new SpeechSynthesisUtterance(sentence);
 
                 // 核心：每一句都強制綁定相同的語音與參數
-                if (this.targetVoice) {
+                if (this.targetVoice && textLang === 'zh-TW') {
                     utterance.voice = this.targetVoice;
                 }
-                utterance.lang = this.config.lang;
+                utterance.lang = textLang; //this.config.lang;
                 utterance.rate = this.config.rate;
                 utterance.pitch = this.config.pitch;
                 utterance.volume = this.config.volume;
 
                 // 可選：監聽事件（例如追蹤進度）
+                /*
                 if (index === 0) {
                     utterance.onstart = () => console.log("長文字開始播放...");
                 }
                 if (index === sentences.length - 1) {
                     utterance.onend = () => console.log("全部文字播放完畢！");
                 }
-
+                */
                 // 丟入全域播放佇列，瀏覽器會自動順序播放
                 this.synth.speak(utterance);
             });
