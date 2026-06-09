@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.0
+// @version      1.0.16.1
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -121,6 +121,9 @@
                 transition: opacity 0.2s ease;
             }
             .popup-speaker:hover .speaker-waves{
+                animation: wave-flash 1s infinite ease-out;
+            }
+            .popup-speaker.is-playing .speaker-waves{
                 animation: wave-flash 1s infinite ease-out;
             }
             @keyframes wave-flash {
@@ -458,6 +461,8 @@
 
             if (speakTimeout) {
                 clearTimeout(speakTimeout);
+                speakTimeout = null;
+                speaker.stop();
             }
 
             const targetText = e.target.innerText.trim();
@@ -477,24 +482,20 @@
         });
         // 翻譯彈窗內容事件
         popupResult.addEventListener('mouseup', (e) => {
-            if (speakTimeout) {
-                clearTimeout(speakTimeout);
-                speakTimeout = null;
-            }
             // speaker 
             const speakerBtn = e.target.closest('.popup-speaker');
             if(speakerBtn) {
                 const text = speakerBtn.parentElement.textContent;
                 speaker.speak(text, (progress) => {
                     if(progress.isInterrupted) {
-                        speakerBtn.querySelector('.popup-speaker').classList.remove('is-playing');
+                        speakerBtn.classList.remove('is-playing');
                         return;
                     }
                     if(progress.currentIndex === 0){
-                        speakerBtn.querySelector('.popup-speaker').classList.add('is-playing');
+                        speakerBtn.classList.add('is-playing');
                     }
                     if(progress.isEnd) {
-                        speakerBtn.querySelector('.popup-speaker').classList.remove('is-playing');
+                        speakerBtn.classList.remove('is-playing');
                     }
                 });
                 return;
@@ -617,7 +618,8 @@
 
             // 2. 切割文字
             const sentences = this._splitText(longText);
-            console.log("切片後的句子：", sentences);
+            const totalSentences = sentences.length;
+            // console.log("切片後的句子：", sentences);
 
             // 3. 依序將切片丟入瀏覽器播放隊列
             sentences.forEach((sentence, index) => {
