@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.33
+// @version      1.0.16.0
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -485,7 +485,18 @@
             const speakerBtn = e.target.closest('.popup-speaker');
             if(speakerBtn) {
                 const text = speakerBtn.parentElement.textContent;
-                speaker.speak(text);
+                speaker.speak(text, (progress) => {
+                    if(progress.isInterrupted) {
+                        speakerBtn.querySelector('.popup-speaker').classList.remove('is-playing');
+                        return;
+                    }
+                    if(progress.currentIndex === 0){
+                        speakerBtn.querySelector('.popup-speaker').classList.add('is-playing');
+                    }
+                    if(progress.isEnd) {
+                        speakerBtn.querySelector('.popup-speaker').classList.remove('is-playing');
+                    }
+                });
                 return;
             }
             // 原文收合/展開
@@ -524,7 +535,9 @@
     class ConsistentLongTextSpeaker {
         constructor() {
             this.synth = window.speechSynthesis;
-            this.targetVoice = null;
+            this.targetVoiceZh = null;
+            this.targetVoiceEn = null;
+            this.activeProgressHandler = null;
             this.config = {
                 lang: 'zh-TW',
                 rate: 0.8,
@@ -539,17 +552,22 @@
         _initVoices() {
             const loadVoices = () => {
                 const voices = this.synth.getVoices();
-                // 優先尋找微軟台灣曉臻（常見且好聽），次之選取任何台灣中文，最後保底中文
-                this.targetVoice = voices.find(v => (v.name.includes("曉臻") || v.name.includes("Hsiaochen")) && v.lang === "zh-TW")
+
+                // 1. 篩選中文語音庫 (優先尋找曉臻，保底中文)
+                this.targetVoiceZh = voices.find(v => (v.name.includes("曉臻") || v.name.includes("Hsiaochen")) && v.lang === "zh-TW")
                     || voices.find(v => v.name.includes("臺灣") && v.lang === "zh-TW")
                     || voices.find(v => v.lang === "zh-TW")
                     || voices.find(v => v.lang.includes("zh"));
-                //console.log("可用語音列表：", voices);
-                if (!this.targetVoice) {
-                    console.log("未找到符合的語音");
-                } else {
-                    console.log("選定的語音：", this.targetVoice.name, this.targetVoice.lang);
-                }
+                
+                // 2. 篩選英文語音庫 (優先尋找微軟 Aria 或原生好聽的 US 語音)
+                this.targetVoiceEn = voices.find(v => v.name.includes("Aria") && v.lang === "en-US")
+                    || voices.find(v => v.name.includes("Guy") && v.lang === "en-US")
+                    || voices.find(v => v.name.includes("Google US English") && v.lang === "en-US")
+                    || voices.find(v => v.lang === "en-US")
+                    || voices.find(v => v.lang.includes("en"));
+                // 監控載入狀況
+                console.log("選定的中文語音：", this.targetVoiceZh ? this.targetVoiceZh.name : "未找到");
+                console.log("選定的英文語音：", this.targetVoiceEn ? this.targetVoiceEn.name : "未找到");
             };
 
             loadVoices();
@@ -581,8 +599,16 @@
         /**
          * 開始播放長文字
          */
-        speak(longText) {
-            // 1. 先停止目前正在播放或排隊的語音，清除狀態
+        speak(longText, onProgress) {
+            // 1.1. 在清除前，先通知舊的監聽器被中斷了
+            if (this.synth.speaking && typeof this.activeProgressHandler === 'function') {
+                this.activeProgressHandler({ isInterrupted: true });
+            }
+
+            // 1.2. 關鍵修正：將最新、當前的監聽器存入全域變數，直接覆蓋舊的
+            this.activeProgressHandler = onProgress;
+
+            // 1.3. 執行中斷:先停止目前正在播放或排隊的語音，清除狀態
             this.synth.cancel();
 
             if (!longText) return;
@@ -597,24 +623,48 @@
             sentences.forEach((sentence, index) => {
                 const utterance = new SpeechSynthesisUtterance(sentence);
 
-                // 核心：每一句都強制綁定相同的語音與參數
-                if (this.targetVoice && textLang === 'zh-TW') {
-                    utterance.voice = this.targetVoice;
+                // 核心：依據偵測到的語言，強制綁定對應的語音與參數
+                if (textLang === 'zh-TW' && this.targetVoiceZh) {
+                    utterance.voice = this.targetVoiceZh;
+                } else if (textLang === 'en-US' && this.targetVoiceEn) {
+                    utterance.voice = this.targetVoiceEn;
                 }
                 utterance.lang = textLang; //this.config.lang;
                 utterance.rate = this.config.rate;
                 utterance.pitch = this.config.pitch;
                 utterance.volume = this.config.volume;
 
-                // 可選：監聽事件（例如追蹤進度）
-                /*
-                if (index === 0) {
-                    utterance.onstart = () => console.log("長文字開始播放...");
-                }
-                if (index === sentences.length - 1) {
-                    utterance.onend = () => console.log("全部文字播放完畢！");
-                }
-                */
+                // 監聽事件:追蹤進度
+                // 每次觸發時，即時檢查 activeProgressHandler 是不是自己
+                // 確保只有最新被點擊的按鈕（例如翻譯按鈕）能接收到進度
+                if (typeof this.activeProgressHandler === 'function' && onProgress === this.activeProgressHandler) {
+                    utterance.onstart = () => {
+                        
+                        this.activeProgressHandler({
+                            currentIndex: index,                        // 當前句子索引 (從 0 開始)
+                            totalCount: totalSentences,                 // 總句子數
+                            currentText: sentence,                      // 當前正在唸的文字
+                            percentage: Math.round(((index + 1) / totalSentences) * 100), // 進度百分比
+                            isEnd: false
+                        });
+                        
+                    };
+                    if (index === totalSentences - 1) {
+                        utterance.onend = () => {
+                            this.activeProgressHandler({
+                                currentIndex: index,
+                                totalCount: totalSentences,
+                                currentText: sentence,
+                                percentage: 100,
+                                isEnd: true // 標記已完全結束
+                            });
+                            // 播完後清空，釋放記憶體
+                            this.activeProgressHandler = null;
+                        };
+                    }                
+                };
+
+                // 當「最後一句」播放完畢時觸發
                 // 丟入全域播放佇列，瀏覽器會自動順序播放
                 this.synth.speak(utterance);
             });
