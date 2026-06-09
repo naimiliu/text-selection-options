@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.32
+// @version      1.0.15.33
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -44,8 +44,8 @@
         let selectedText = "";
         let savedSelection = null; // 用來暫存文字選取範圍
         // ---- 彈窗相關變數
-        const speakerMain = `<svg class="icon-default" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path d="M0 0h16v16H0z" fill="none" /><path fill="currentColor" d="M 11 4.536 M 4 11 H 3 a 2 2 0 0 1 -2 -2 V 7 a 2 2 0 0 1 2 -2 h 1 zM 9.293 1 c 0.39 0 0.707 0.317 0.707 0.707 v 12.586 a 0.707 0.707 0 0 1 -1.207 0.5 L 5 11 V 5 l 3.793 -3.793a.7.7 0 0 1 .5-.207" /></svg>`;
-        const speakerWaves = `<svg class="icon-hover" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path fill="currentColor" d="M12 2.804a6 6 0 0 1 0 10.392l-.5-.866a5 5 0 0 0 0-8.66zM11 4.536a4 4 0 0 1 0 6.928l-.5-.866a3 3 0 0 0 0-5.196" /></svg>`;        
+        const speakerMain = `<svg class="speaker-main" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path d="M0 0h16v16H0z" fill="none" /><path fill="currentColor" d="M 11 4.536 M 4 11 H 3 a 2 2 0 0 1 -2 -2 V 7 a 2 2 0 0 1 2 -2 h 1 zM 9.293 1 c 0.39 0 0.707 0.317 0.707 0.707 v 12.586 a 0.707 0.707 0 0 1 -1.207 0.5 L 5 11 V 5 l 3.793 -3.793a.7.7 0 0 1 .5-.207" /></svg>`;
+        const speakerWaves = `<svg class="speaker-waves" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path fill="currentColor" d="M12 2.804a6 6 0 0 1 0 10.392l-.5-.866a5 5 0 0 0 0-8.66zM11 4.536a4 4 0 0 1 0 6.928l-.5-.866a3 3 0 0 0 0-5.196" /></svg>`;
         let isDragging = false;
         let dragOffsetX = 0;
         let dragOffsetY = 0;
@@ -108,20 +108,16 @@
                 width: 24px;
                 height: 24px;
                 display: inline-block;
-                position:relative;
-                margin-right: 15px;
+                margin-right: 5px;
                 color: #f16a10;
             }
             .popup-speaker svg {
-                position: absolute;
-                top: 5px;
-                left: 0;
                 width: 20px;
                 height: 20px;
             }
             .popup-speaker .speaker-waves {
-                opicity: 0;
-                transform: translateX(2px);
+                opacity: 0;
+                transform: translate(4px, -25px);
                 transition: opacity 0.2s ease;
             }
             .popup-speaker:hover .speaker-waves{
@@ -130,14 +126,14 @@
             @keyframes wave-flash {
                 0% {
                     opacity: 0;
-                    transform: translateX(2px) scale(0.8); /* 從稍微縮小開始 */
+                    transform: translate(0px, -25px) scale(0.8); /* 從稍微縮小開始 */
                 }
                 30% {
                     opacity: 1; /* 快速亮起 */
                 }
                 100% {
                     opacity: 0; /* 慢慢淡出 */
-                    transform: translateX(6px) scale(1.2); /* 同時向右擴散放大 */
+                    transform: translateX(6px, -25px) scale(2); /* 同時向右擴散放大 */
                 }
             }                
             #popup-translation-source p, #popup-translation-translated p {
