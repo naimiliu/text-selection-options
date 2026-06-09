@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.17
+// @version      1.0.15.18
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -42,9 +42,9 @@
         const speaker = new ConsistentLongTextSpeaker();
         // ---- 文字選取相關變數
         let selectedText = "";
-        let isSelecting = false;
         let savedSelection = null; // 用來暫存文字選取範圍
         // ---- 彈窗相關變數
+        const speakerIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path d="M0 0h16v16H0z" fill="none" /><g fill="currentColor"><path d="M9.293 1c.39 0 .707.317.707.707v12.586a.707.707 0 0 1-1.207.5L5 11V5l3.793-3.793a.7.7 0 0 1 .5-.207M12 2.804a6 6 0 0 1 0 10.392l-.5-.866a5 5 0 0 0 0-8.66z" /><path d="M11 4.536a4 4 0 0 1 0 6.928l-.5-.866a3 3 0 0 0 0-5.196zM4 11H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1z" /></g></svg>`;        
         let isDragging = false;
         let dragOffsetX = 0;
         let dragOffsetY = 0;
@@ -97,6 +97,14 @@
                 align-item: flex-start;
                 border-bottom: 1px solid #eee;
             }
+            .popup-speaker {
+                width: 1.2em;
+                height: 1.2em;
+                background: #ccc; 
+                display: inline-block;
+                margin-right: 8px;
+                flex-shrink: 0; /* 防止圖示被壓縮 */
+            }
             #popup-translation-source p {
                 margin:0;
                 flex-grow: 1;
@@ -112,9 +120,23 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+            #popup-translation-source.collapse::after{
+                content: "▼";
+                font-size: 0.8em;
+                color: #888;
+                margin-left: 8px;
+                flex-shrink: 0;
+            }
             #popup-translation-source.expanded p{
                 display: block;
                 overflow: visible;
+            }
+            #popup-translation-source.expanded::after{
+                content: "▲";
+                font-size: 0.8em;
+                color: #888;
+                margin-left: 8px;
+                flex-shrink: 0;
             }
             
             .py-result-item {
@@ -233,6 +255,10 @@
                                 const sourceDiv = document.createElement('div');
                                 sourceDiv.id = 'popup-translation-source';
                                 sourceDiv.className = 'collapse';
+                                const btn = document.createElement('button');
+                                btn.className = 'popup-speaker';
+                                btn.innerHTML = speakerIcon;
+                                sourceDiv.appendChild(btn);
                                 const p =document.createElement('p');
                                 p.appendChild(source);
                                 sourceDiv.appendChild(p);
@@ -240,8 +266,14 @@
                             }
                             if(translated) {
                                 const translatedDiv = document.createElement('div');
-                                translatedDiv.className = 'translated';
-                                translatedDiv.appendChild(translated);
+                                translatedDiv.id = 'popup-translationtranslated';
+                                const btn = document.createElement('button');
+                                btn.className = 'popup-speaker';
+                                btn.innerHTML = speakerIcon;
+                                translatedDiv.appendChild(btn);
+                                const p =document.createElement('p');
+                                p.appendChild(source);
+                                translatedDiv.appendChild(p);
                                 popupResult.appendChild(translatedDiv);
                             }
                         }
@@ -411,15 +443,23 @@
                 speakTimeout = null;
             }
         });
+        // 翻譯彈窗內容事件
         popupResult.addEventListener('mouseup', (e) => {
             if (speakTimeout) {
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
+            // 原文收合/展開
             const target = e.target.closest('#popup-translation-source');
             if(target) {
                 target.classList.toggle('collapse');
                 target.classList.toggle('expanded');
+            }
+            // speaker 
+            const speakerBtn = e.target.closest('.popup-speaker');
+            if(speakerBtn) {
+                const text = speakerBtn.parentElement.textContent;
+                speaker(text);
             }
         });
         
