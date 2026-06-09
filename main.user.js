@@ -231,7 +231,7 @@
             if(text) {
                 // 使用正則表達式，把英文單字或個別中文字切開
                 // \w+'?\w* 代表英文單字(含don't), [\u4e00-\u9fa5] 代表中文字
-                const tokens = text.split(/(\w+'?\w*|[\u4e00-\u9fa5]|\s+)/g);
+                const tokens = text.replace(/&nbsp;|&emsp;|&ensp;|　|  /g, '').trim().split(/(\w+'?\w*|[\u4e00-\u9fa5]|\s+|[]+)/g);
                 
                 tokens.forEach(token => {
                     if (!token) return;
