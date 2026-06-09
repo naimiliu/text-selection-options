@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.23
+// @version      1.0.15.24
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -112,9 +112,7 @@
                 border: none;
                 margin-right: 8px;
                 padding-top: 5px;
-            }
-            .popup-speaker svg {
-                fill: #f16a10;
+                color: #f16a10;
             }
             .popup-speaker .icon-hover{
                 display: none;
@@ -293,7 +291,7 @@
                                 translatedDiv.id = 'popup-translation-translated';
                                 const btn = document.createElement('button');
                                 btn.className = 'popup-speaker';
-                                btn.innerHTML = speakerIcon;
+                                btn.innerHTML = speakerIcon + speakerHoverIcon;
                                 translatedDiv.appendChild(btn);
                                 const p =document.createElement('p');
                                 p.appendChild(translated);
