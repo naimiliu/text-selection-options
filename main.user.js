@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.24
+// @version      1.0.15.25
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -90,9 +90,6 @@
                 pointer-events: auto;
             }  
             #popup.show { display: block; }
-            #popup button:hover {
-                color: red;
-            }
             #popup-translation-source {
                 display: flex;
                 align-item: flex-start;
@@ -113,6 +110,8 @@
                 margin-right: 8px;
                 padding-top: 5px;
                 color: #f16a10;
+                transition: 'all 0.5s ease-out'
+                
             }
             .popup-speaker .icon-hover{
                 display: none;
