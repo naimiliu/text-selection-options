@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.26
+// @version      1.0.15.27
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -103,7 +103,7 @@
             .popup-speaker {
                 background: transparent;
                 border: none;
-                padding-top: 5px;
+                padding: 0px;
                 cursor:pointer;
                 position: relative;
                 width: 24px;
@@ -114,10 +114,10 @@
             }
             .popup-speaker svg {
                 position: absolute;
-                top:0; 
+                top: 5px; 
                 left: 0;
-                width: 100%;
-                height: 100%;
+                width: 20px;
+                height: 20px;
                 transition: opacity 0.3s ease-out;
                 
             }
