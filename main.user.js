@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.18
+// @version      1.0.15.19
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -100,9 +100,8 @@
             .popup-speaker {
                 width: 1.2em;
                 height: 1.2em;
-                background: #ccc; 
                 display: inline-block;
-                margin-right: 8px;
+                vertical-align: middle;
                 flex-shrink: 0; /* 防止圖示被壓縮 */
             }
             #popup-translation-source p {
@@ -266,7 +265,7 @@
                             }
                             if(translated) {
                                 const translatedDiv = document.createElement('div');
-                                translatedDiv.id = 'popup-translationtranslated';
+                                translatedDiv.id = 'popup-translation-translated';
                                 const btn = document.createElement('button');
                                 btn.className = 'popup-speaker';
                                 btn.innerHTML = speakerIcon;
@@ -449,17 +448,18 @@
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
-            // 原文收合/展開
-            const target = e.target.closest('#popup-translation-source');
-            if(target) {
-                target.classList.toggle('collapse');
-                target.classList.toggle('expanded');
-            }
             // speaker 
             const speakerBtn = e.target.closest('.popup-speaker');
             if(speakerBtn) {
                 const text = speakerBtn.parentElement.textContent;
                 speaker(text);
+                return;
+            }
+            // 原文收合/展開
+            const target = e.target.closest('#popup-translation-source');
+            if(target) {
+                target.classList.toggle('collapse');
+                target.classList.toggle('expanded');
             }
         });
         
