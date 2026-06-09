@@ -410,13 +410,16 @@
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
-
         });
         popupResult.addEventListener('mouseup', (e) => {
+            if (speakTimeout) {
+                clearTimeout(speakTimeout);
+                speakTimeout = null;
+            }
             const target = e.target.closest('#popup-translation-source');
             if(target) {
-                this.classList.toggle('collapse');
-                this.classList.toggle('expanded');
+                target.classList.toggle('collapse');
+                target.classList.toggle('expanded');
             }
         });
         
