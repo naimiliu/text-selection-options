@@ -407,7 +407,7 @@
             }
 
         });
-        popuoResult.addEventListener('mouseup', () => {
+        popupResult.addEventListener('mouseup', () => {
             const target = e.target.closest('#popup-translation-source');
             if(target) {
                 this.classList.toggle('collapse');
