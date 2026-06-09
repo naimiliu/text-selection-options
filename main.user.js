@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.15.31
+// @version      1.0.15.32
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -114,7 +114,7 @@
             }
             .popup-speaker svg {
                 position: absolute;
-                top: 0;
+                top: 5px;
                 left: 0;
                 width: 20px;
                 height: 20px;
@@ -124,7 +124,7 @@
                 transform: translateX(2px);
                 transition: opacity 0.2s ease;
             }
-            .popup-speaker:hover .icon-waves{
+            .popup-speaker:hover .speaker-waves{
                 animation: wave-flash 1s infinite ease-out;
             }
             @keyframes wave-flash {
