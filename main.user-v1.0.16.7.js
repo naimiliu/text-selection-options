@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.6
+// @version      1.0.16.7
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -90,6 +90,7 @@
                 pointer-events: auto;
             }  
             #popup.show { display: block; }
+            #close-popup:hover {color: red}
             #popup-translation-source {
                 display: flex;
                 align-item: flex-start;
@@ -143,11 +144,12 @@
                 margin:0;
                 flex-grow: 1;
             }
-            
             #popup-translation-source.collapse {
+                cursor: default;
+            }
+            #popup-translation-source.collapse.has-more {
                 cursor: pointer;
             }
-            
             #popup-translation-source.collapse p {
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
@@ -155,7 +157,7 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
-            #popup-translation-source.collapse::after{
+            #popup-translation-source.collapse.has-more::after{
                 content: "▼";
                 font-size: 0.8em;
                 color: #888;
@@ -166,14 +168,14 @@
                 display: block;
                 overflow: visible;
             }
-            #popup-translation-source.expanded::after{
+            #popup-translation-source.expanded.has-more::after{
                 content: "▲";
                 font-size: 0.8em;
                 color: #888;
                 margin-left: 8px;
                 flex-shrink: 0;
             }
-            
+            .hover-word { cursor: help; }
             .py-result-item {
                 line-height: 2.5;
                 padding-right: 5px;
@@ -299,6 +301,15 @@
                                 p.appendChild(source);
                                 sourceDiv.appendChild(p);
                                 popupResult.appendChild(sourceDiv);
+
+                                // 如果 p 的實際總高度 (scrollHeight) 大於 目前看得到的高度 (clientHeight)
+                                // 代表文字有多行，且目前被 line-clamp 壓縮了
+                                if(p.scrollHeight > p.clientHeight) {
+                                    sourceDiv.classList.add('has-more');
+                                }
+                                else {
+                                    sourceDiv.classList.remove('has-more');
+                                }
                             }
                             if(translated) {
                                 const translatedDiv = document.createElement('div');
@@ -505,12 +516,15 @@
             }
             // 原文收合/展開
             const target = e.target.closest('#popup-translation-source');
-            if(target) {
+            if(target && target.classList.contains('has-more')) {
+                e.preventDefault();
                 target.classList.toggle('collapse');
                 target.classList.toggle('expanded');
+
+                // 文字選取因點擊取消, 隱藏工具箱(toolbox)
+                toolbox.classList.remove("show");
+                return;
             }
-            // 文字選取因點擊取消, 隱藏工具箱(toolbox)
-            toolbox.classList.remove("show");
         });
         
         document.addEventListener("mouseup", (e) => {
