@@ -295,6 +295,7 @@
                                 btn.innerHTML = speakerMain + speakerWaves;
                                 sourceDiv.appendChild(btn);
                                 const p =document.createElement('p');
+                                p.className = 'text-content';
                                 p.appendChild(source);
                                 sourceDiv.appendChild(p);
                                 popupResult.appendChild(sourceDiv);
@@ -307,6 +308,7 @@
                                 btn.innerHTML = speakerMain + speakerWaves;
                                 translatedDiv.appendChild(btn);
                                 const p =document.createElement('p');
+                                p.className = 'text-content';
                                 p.appendChild(translated);
                                 translatedDiv.appendChild(p);
                                 popupResult.appendChild(translatedDiv);
@@ -461,7 +463,7 @@
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
-            speaker.stop();
+//            speaker.stop();
 
             // 檢查滑鼠當下指著的，是不是包裝好的文字標籤
             if (!e.target.classList.contains('hover-word')) return;
@@ -476,11 +478,13 @@
         });
         popupResult.addEventListener('mouseleave', (e) => {
             e.stopPropagation();
-            if (speakTimeout) {
-                clearTimeout(speakTimeout);
-                speakTimeout = null;
+            if(e.target.closest('.text-content')) {
+                if (speakTimeout) {
+                    clearTimeout(speakTimeout);
+                    speakTimeout = null;
+                }
+                speaker.stop();
             }
-            speaker.stop();
         });
         // 翻譯彈窗內容事件
         popupResult.addEventListener('mouseup', (e) => {
