@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.5
+// @version      1.0.16.6
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -408,7 +408,6 @@
         // 彈窗事件監聽
         popup.addEventListener("mouseup", e => {
             e.stopPropagation();
-            //toolbox.classList.remove("show");
         });
         // --- 關閉彈窗
         closePopup.addEventListener("click", () => {
@@ -484,7 +483,7 @@
                 }
             }
         });
-        // 翻譯彈窗內容事件
+        // 翻譯彈窗內容點擊事件
         popupResult.addEventListener('mouseup', (e) => {
             // speaker 
             const speakerBtn = e.target.closest('.popup-speaker');
@@ -510,6 +509,8 @@
                 target.classList.toggle('collapse');
                 target.classList.toggle('expanded');
             }
+            // 文字選取因點擊取消, 隱藏工具箱(toolbox)
+            toolbox.classList.remove("show");
         });
         
         document.addEventListener("mouseup", (e) => {
