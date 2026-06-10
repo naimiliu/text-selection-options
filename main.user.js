@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.1
+// @version      1.0.16.2
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -457,13 +457,13 @@
             e.stopPropagation();
 
             // 檢查滑鼠當下指著的，是不是我們剛剛包裝好的文字標籤
-            if (!e.target.classList.contains('hover-word')) return;
-
             if (speakTimeout) {
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
-                speaker.stop();
+                
             }
+            speaker.stop();
+            if (!e.target.classList.contains('hover-word')) return;
 
             const targetText = e.target.innerText.trim();
             if (targetText && targetText.length >= 1) {
@@ -676,7 +676,11 @@
          * 隨時停止播放
          */
         stop() {
+            if (typeof this.activeProgressHandler === 'function') {
+                this.activeProgressHandler({ isInterrupted: true });
+            }
             this.synth.cancel();
+            this.activeProgressHandler = null;
         }
     }
 
