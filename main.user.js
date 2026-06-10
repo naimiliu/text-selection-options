@@ -90,7 +90,7 @@
                 pointer-events: auto;
             }  
             #popup.show { display: block; }
-            #close-popup:hover {color: red};
+            #close-popup:hover {color: red}
             #popup-translation-source {
                 display: flex;
                 align-item: flex-start;
@@ -175,7 +175,7 @@
                 margin-left: 8px;
                 flex-shrink: 0;
             }
-            
+            .hover-word { cursor: help; }
             .py-result-item {
                 line-height: 2.5;
                 padding-right: 5px;
