@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.2
+// @version      1.0.16.3
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -456,29 +456,31 @@
             e.preventDefault();
             e.stopPropagation();
 
-            // 檢查滑鼠當下指著的，是不是我們剛剛包裝好的文字標籤
+            // 清除上個位置的資料
             if (speakTimeout) {
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
-                
             }
             speaker.stop();
+
+            // 檢查滑鼠當下指著的，是不是包裝好的文字標籤
             if (!e.target.classList.contains('hover-word')) return;
 
             const targetText = e.target.innerText.trim();
             if (targetText && targetText.length >= 1) {
                 speakTimeout = setTimeout(() => {
-                // 直接從元件精準抓字，百分之百成功，完全無視 Shadow DOM 跨域限制！
                     speaker.speak(targetText);
                     speakTimeout = null;
-                }, 500); // 依據您的腳本設定，滑鼠停留在字上面 1 秒後觸發
+                }, 500); // 滑鼠停留在字上面 0.5 秒後觸發
             }
         });
-        popupResult.addEventListener('mouseleave', () => {
+        popupResult.addEventListener('mouseleave', (e) => {
+            e.stopPropagation();
             if (speakTimeout) {
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
+            speaker.stop();
         });
         // 翻譯彈窗內容事件
         popupResult.addEventListener('mouseup', (e) => {
