@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.3
+// @version      1.0.16.4
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -408,7 +408,7 @@
         // 彈窗事件監聽
         popup.addEventListener("mouseup", e => {
             e.stopPropagation();
-            toolbox.classList.remove("show");
+            //toolbox.classList.remove("show");
         });
         // --- 關閉彈窗
         closePopup.addEventListener("click", () => {
@@ -463,7 +463,6 @@
                 clearTimeout(speakTimeout);
                 speakTimeout = null;
             }
-//            speaker.stop();
 
             // 檢查滑鼠當下指著的，是不是包裝好的文字標籤
             if (!e.target.classList.contains('hover-word')) return;
@@ -483,7 +482,6 @@
                     clearTimeout(speakTimeout);
                     speakTimeout = null;
                 }
-                speaker.stop();
             }
         });
         // 翻譯彈窗內容事件
