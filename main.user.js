@@ -63,13 +63,13 @@
                 pointer-events: none; 
             }
             #toolbox {
-                display: none; flex-direction: row; position: fixed; 
-                min-width: 232px; 
-                color: black;background: white; 
-                padding: 10px; border: 1px solid #ccc; 
-                border-radius: 20px; 
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); z-index: 2147483647;   
-                pointer-events: auto; 
+                display: none; flex-direction: row; position: fixed;
+                min-width: 232px;
+                color: black;background: white;
+                padding: 10px; border: 1px solid #ccc;
+                border-radius: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); z-index: 2147483647;
+                pointer-events: auto;
             }
             #toolbox.show { display: flex; }
             #toolbox button {
@@ -83,13 +83,13 @@
                 color: #0056b3;
             }
             #popup {
-                display: none; position: fixed; 
-                font-family: "Microsoft JhengHei", Arial, sans-serif; 
+                display: none; position: fixed;
+                font-family: "Microsoft JhengHei", Arial, sans-serif;
                 width: 400px; height: auto;
                 background: white; border: 1px solid #ccc;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; z-index: 2147483647;
                 pointer-events: auto;
-            }  
+            }
             #popup.show { display: block; }
             #popup-header { background: #f1f3f4; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;cursor:move; }
             #popup-title { color: #5f6368; font-size: 14px; font-weight: bold; }
@@ -144,7 +144,7 @@
                     opacity: 0; /* 慢慢淡出 */
                     transform: translateX(6px, -25px) scale(2); /* 同時向右擴散放大 */
                 }
-            }                
+            }
             #popup-translation-source p, #popup-translation-translated p {
                 margin:0;
                 flex-grow: 1;
@@ -188,8 +188,8 @@
                 margin-right: 5px;
                 margin-bottom: 10px;
                 cursor:help;
-                display: inline-flex; 
-                text-align: center;  
+                display: inline-flex;
+                text-align: center;
             }
             .py-result-item:hover { background: #ffff00 !important; border-radius:4px;}
             .py-pinyin-item { font-weight: 800; color: #0477e2;}
@@ -337,10 +337,10 @@
                 // 使用正則表達式，把英文單字或個別中文字切開
                 // \w+'?\w* 代表英文單字(含don't), [\u4e00-\u9fa5] 代表中文字
                 const tokens = text.replace(/&nbsp;|&emsp;|&ensp;|　|  /g, '').trim().split(/(\w+'?\w*|[\u4e00-\u9fa5]|\s+|[]+)/g);
-                
+
                 tokens.forEach(token => {
                     if (!token) return;
-                    
+
                     if (token.trim().length > 0) {
                         // 直接建立真正的 span 元件
                         const span = document.createElement('span');
@@ -351,7 +351,7 @@
                     } else {
                         // 空白或換行則建立純文字節點（TextNode）保留
                         const textNode = document.createTextNode(token);
-                        fragment.appendChild(textNode);     
+                        fragment.appendChild(textNode);
                     }
                 });
 
@@ -418,8 +418,9 @@
         });
         // --- 關閉彈窗
         closePopup.addEventListener("click", () => {
-            if(speaker)
+            if(speaker) {
                 speaker.stop();
+            }
             popupResult.querySelectorAll('.popup-speaker').forEach(btn => {
                 btn.classList.remove('is-playing');
             });
@@ -487,8 +488,9 @@
             else if(popupType === '翻譯') {
                 targetText = e.target.innerText.trim();
             }
-            else 
+            else {
                 return;
+            }
             if (targetText && targetText.length >= 1) {
                 speakTimeout = setTimeout(() => {
                     speaker.speak(targetText);
@@ -535,7 +537,7 @@
             // 文字選取因點擊取消, 隱藏工具箱(toolbox)
             toolbox.classList.remove("show");
         });
-        
+
         document.addEventListener("mouseup", (e) => {
             // 💡 穿透檢查：如果點擊路徑中包含小說閱讀器的 Host 標籤
             if (e.composedPath().some(el => el.id === 'my-reader-overlay')) {
@@ -556,8 +558,9 @@
                     toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
                     loadPopupResult(selectedText);
                     // 更新彈窗內容
-                    if(popupType)
+                    if(popupType) {
                         loadPopupResult(selectedText);
+                    }
                     return;
                 }
                 else {
@@ -596,7 +599,7 @@
                     || voices.find(v => v.name.includes("臺灣") && v.lang === "zh-TW")
                     || voices.find(v => v.lang === "zh-TW")
                     || voices.find(v => v.lang.includes("zh"));
-                
+
                 // 2. 篩選英文語音庫 (優先尋找微軟 Aria 或原生好聽的 US 語音)
                 this.targetVoiceEn = voices.find(v => v.name.includes("Aria") && v.lang === "en-US")
                     || voices.find(v => v.name.includes("Guy") && v.lang === "en-US")
@@ -681,7 +684,6 @@
                 // 確保只有最新被點擊的按鈕（例如翻譯按鈕）能接收到進度
                 if (typeof this.activeProgressHandler === 'function' && onProgress === this.activeProgressHandler) {
                     utterance.onstart = () => {
-                        
                         this.activeProgressHandler({
                             currentIndex: index, // 當前句子索引 (從 0 開始)
                             totalCount: totalSentences, // 總句子數
@@ -689,7 +691,6 @@
                             percentage: Math.round(((index + 1) / totalSentences) * 100), // 進度百分比
                             isEnd: false
                         });
-                        
                     };
                     if (index === totalSentences - 1) {
                         utterance.onend = () => {
@@ -703,7 +704,7 @@
                             // 播完後清空，釋放記憶體
                             this.activeProgressHandler = null;
                         };
-                    }                
+                    }
                 };
 
                 // 當「最後一句」播放完畢時觸發
