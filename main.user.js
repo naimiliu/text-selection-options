@@ -58,9 +58,9 @@
                 font-family: "Microsoft Yahei", Arial, sans-serif;
                 display:flex; position:fixed; top:0; left:0; width:100%; height:100%;
                 justify-content: center; overflow: hidden;
-                z-index:999999; 
+                z-index:999999;
                 -webkit-overflow-scrolling: touch;
-                pointer-events: none; 
+                pointer-events: none;
             }
             #toolbox {
                 display: none; flex-direction: row; position: fixed;
@@ -538,12 +538,7 @@
             toolbox.classList.remove("show");
         });
 
-        document.addEventListener("mouseup", (e) => {
-            // 💡 穿透檢查：如果點擊路徑中包含小說閱讀器的 Host 標籤
-            if (e.composedPath().some(el => el.id === 'my-reader-overlay')) {
-                return; // 油猴腳本直接結束，把主導權完全讓給擴充功能！
-            }
-
+        function toolboxHandler(e) {
             setTimeout(() => {
                 // 取得目前選取的 Selection 物件
                 const selection = window.getSelection();
@@ -570,7 +565,23 @@
                 }
 
             }, 50);
-        });
+        };
+
+        function checkReaderStatus(event) {
+            // 檢查收到的訊息是不是來自小說閱讀器的專屬暗號
+            if (event.data && event.data.type === "MY_READER_OPENED") {
+
+                // 💡 核心核心：徹底拔除油猴腳本的滑鼠監聽器，100% 釋放 CPU 資源！
+                document.removeEventListener('mouseup', toolboxHandler);
+
+                // 同時也把這個檢查暗號的監聽器拔掉，讓油猴腳本在該網頁徹底斷氣、不佔記憶體
+                window.removeEventListener('message', checkReaderStatus);
+
+                console.log('油猴腳本：收到小說閱讀器開啟訊號，已完美自毀並釋放所有監聽資源。');
+            }
+        }
+        document.addEventListener('mouseup', toolboxHandler);
+        window.addEventListener('message', checkReaderStatus);
     }
 
     class ConsistentLongTextSpeaker {
