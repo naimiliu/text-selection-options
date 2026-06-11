@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.9
+// @version      1.0.16.10
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -20,7 +20,7 @@
 
     function init() {
         const host = document.createElement('div');
-        host.id = "my-reader-overlay";
+        host.id = "my-toolbox-overlay";
         Object.assign(host.style, {
             position: 'fixed',
             top: '0',
@@ -537,6 +537,11 @@
         });
         
         document.addEventListener("mouseup", (e) => {
+            // 💡 穿透檢查：如果點擊路徑中包含小說閱讀器的 Host 標籤
+            if (e.composedPath().some(el => el.id === 'my-reader-overlay')) {
+                return; // 油猴腳本直接結束，把主導權完全讓給擴充功能！
+            }
+            
             setTimeout(() => {
                 // 取得目前選取的 Selection 物件
                 const selection = window.getSelection();
