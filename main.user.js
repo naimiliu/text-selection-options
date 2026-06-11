@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.8
+// @version      1.0.16.9
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -91,7 +91,11 @@
                 pointer-events: auto;
             }  
             #popup.show { display: block; }
-            #close-popup:hover {color: red}
+            #popup-header { background: #f1f3f4; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;cursor:move; }
+            #popup-title { color: #5f6368; font-size: 14px; font-weight: bold; }
+            #close-popup { color: black; background: none; border: none; cursor: pointer; font-size: 16px;}
+            #close-popup:hover { color: #ff0000; }
+            #popup-result { font-color: black; font-size: 20px; padding: 15px; min-height: 40px; max-height: 220px; overflow-y: auto; overflow-x: hidden; line-height: 1.5; word-break: break-word; text-align: justify; }
             #popup-translation-source {
                 display: flex;
                 align-item: flex-start;
@@ -177,10 +181,18 @@
                 flex-shrink: 0;
             }
             .hover-word { cursor: help; }
+            .hover-word:hover {background: #ffff00;}
             .py-result-item {
-                line-height: 2.5;
-                padding-right: 5px;
+                color: black;
+                font-size: 22px;
+                margin-right: 5px;
+                margin-bottom: 10px;
+                cursor:help;
+                display: inline-flex; 
+                text-align: center;  
             }
+            .py-result-item:hover { background: #ffff00 !important; border-radius:4px;}
+            .py-pinyin-item { font-weight: 800; color: #0477e2;}
         `;
         shadow.appendChild(style);
 
@@ -199,11 +211,11 @@
         const popup = document.createElement("div");
         popup.id = "popup";
         popup.innerHTML = `
-            <div id="popup-header" style="background: #f1f3f4; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;cursor:move;">
-               <span id="popup-title" style="font-size: 14px; font-weight: bold; color: #5f6368;">...</span>
-               <button id="close-popup" style="border: none; background: transparent; cursor: pointer; font-size: 16px;">X</button>
+            <div id="popup-header">
+               <span id="popup-title" >Title</span>
+               <button id="close-popup">X</button>
             </div>
-            <div id="popup-result" style="padding: 15px; font-size: 20px; min-height: 40px; max-height: 220px; overflow-y: auto; overflow-x: hidden; line-height: 1.5; word-break: break-word;"><span class="hover-word">loading</span></div>
+            <div id="popup-result">loading</div>
         `;
         shadow.appendChild(popup);
         const popupHeader = popup.querySelector("#popup-header");
@@ -252,23 +264,8 @@
             if (!popupType) return;
 
             if (popupType === '拼音') {
-                const sentences = text.split(/([。？！；…\n\r]|\,\s*)/g)
-                    .map(s => s.trim())
-                    .filter(s => s.length > 0)
-                    .reduce((acc, current) => {
-                        const punctuations = ["。", "？", "！", "；", "…", ",", "”", "“", "‘", "’"];
-                        if (punctuations.includes(current) && acc.length > 0) {
-                            acc[acc.length - 1] += current;
-                        } else {
-                            acc.push(current);
-                        }
-                        return acc;
-                    }, []);
-                let pinyinHtml = "";
-                sentences.forEach(sentence => {
-                    pinyinHtml += "<div style='text-indent:2em'>" + html(sentence) + "</div>";
-                });
-                popupResult.innerHTML = pinyinHtml;
+                const pureChinese = text.replace(/[^\u4e00-\u9fa5]/g, '');
+                popupResult.innerHTML = html(pureChinese);
             }
             else if (popupType === '翻譯') {
                 const targetLang = /[\u4e00-\u9fa5]/.test(selectedText) ? 'en' : 'zh-TW';
@@ -371,7 +368,6 @@
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
                 showMessage("Copied!", `${rect.left + rect.width / 2}px`, `${rect.top - 30}px`);
                 selection.removeAllRanges();
-                //toolbox.classList.remove("show");
             });
         });
         // --- 搜尋
@@ -423,7 +419,14 @@
         });
         // --- 關閉彈窗
         closePopup.addEventListener("click", () => {
-            popup.classList.remove("show");
+            if(speaker)
+                speaker.stop();
+            popupResult.querySelectorAll('.popup-speaker').forEach(btn => {
+                btn.classList.remove('is-playing');
+            });
+            popupType = null;
+            popupResult.textContent = '';
+            popup.classList.remove('show');
         });
 
         //--- 拖動彈窗
@@ -476,9 +479,17 @@
             }
 
             // 檢查滑鼠當下指著的，是不是包裝好的文字標籤
-            if (!e.target.classList.contains('hover-word')) return;
-
-            const targetText = e.target.innerText.trim();
+            if (!e.target.classList.contains('hover-word') && !e.target.closest('.py-result-item')) return;
+            let targetText = null;
+            if(popupType === '拼音') {
+                const pyResultItem = e.target.closest('.py-result-item');
+                targetText = pyResultItem.querySelector('.py-chinese-item').innerText.trim();
+            }
+            else if(popupType === '翻譯') {
+                targetText = e.target.innerText.trim();
+            }
+            else 
+                return;
             if (targetText && targetText.length >= 1) {
                 speakTimeout = setTimeout(() => {
                     speaker.speak(targetText);
@@ -488,7 +499,7 @@
         });
         popupResult.addEventListener('mouseleave', (e) => {
             e.stopPropagation();
-            if(e.target.closest('.text-content')) {
+            if(e.target.closest('.text-content') || popupType === '拼音') {
                 if (speakTimeout) {
                     clearTimeout(speakTimeout);
                     speakTimeout = null;
@@ -521,11 +532,9 @@
                 e.preventDefault();
                 target.classList.toggle('collapse');
                 target.classList.toggle('expanded');
-
-                // 文字選取因點擊取消, 隱藏工具箱(toolbox)
-                toolbox.classList.remove("show");
-                return;
             }
+            // 文字選取因點擊取消, 隱藏工具箱(toolbox)
+            toolbox.classList.remove("show");
         });
         
         document.addEventListener("mouseup", (e) => {
@@ -542,14 +551,18 @@
                     toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
                     toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
                     loadPopupResult(selectedText);
+                    // 更新彈窗內容
+                    if(popupType)
+                        loadPopupResult(selectedText);
+                    return;
                 }
                 else {
-                    if (toolbox.contains(e.target)) return;
+                    if (toolbox.contains(e.target) || popup.contains(e.target)) return;
                     toolbox.classList.remove("show");
                     popup.classList.remove("show");
                 }
 
-            }, 100);
+            }, 50);
         });
     }
 
@@ -561,7 +574,7 @@
             this.activeProgressHandler = null;
             this.config = {
                 lang: 'zh-TW',
-                rate: 0.8,
+                rate: 1.0,
                 pitch: 1.0,
                 volume: 1.0
             };
@@ -646,13 +659,16 @@
                 const utterance = new SpeechSynthesisUtterance(sentence);
 
                 // 核心：依據偵測到的語言，強制綁定對應的語音與參數
+                let rate = null;
                 if (textLang === 'zh-TW' && this.targetVoiceZh) {
                     utterance.voice = this.targetVoiceZh;
-                } else if (textLang === 'en-US' && this.targetVoiceEn) {
+                } 
+                else if (textLang === 'en-US' && this.targetVoiceEn) {
                     utterance.voice = this.targetVoiceEn;
+                    rate = 0.7;
                 }
                 utterance.lang = textLang; //this.config.lang;
-                utterance.rate = this.config.rate;
+                utterance.rate = rate ?? this.config.rate;
                 utterance.pitch = this.config.pitch;
                 utterance.volume = this.config.volume;
 
