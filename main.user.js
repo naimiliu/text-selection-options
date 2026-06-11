@@ -9,7 +9,7 @@
 // @exclude      *://*.bankchb.com/*
 // @grant        GM_xmlhttpRequest
 // @run-at       document-end
-// @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3.28.1/dist/index.min.js
+// @require      https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.js
 // @updateURL    https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/main.user.js
 // ==/UserScript==
