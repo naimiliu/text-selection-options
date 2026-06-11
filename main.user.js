@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.10
+// @version      1.0.16.11
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -264,7 +264,12 @@
 
             if (popupType === '拼音') {
                 const pureChinese = text.replace(/[^\u4e00-\u9fa5]/g, '');
-                popupResult.innerHTML = html(pureChinese);
+                if(pureChinese && pureChinese.length > 0) {
+                    popupResult.innerHTML = html(pureChinese);
+                }
+                else {
+                    popupResult.textContent = "只顯示中文拼音。";
+                }               
             }
             else if (popupType === '翻譯') {
                 const targetLang = /[\u4e00-\u9fa5]/.test(selectedText) ? 'en' : 'zh-TW';
