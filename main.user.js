@@ -260,7 +260,6 @@
         };
 
         const loadPopupResult = (text) => {
-            console.log(text, popupType);
             if (!popupType) return;
 
             if (popupType === '拼音') {
