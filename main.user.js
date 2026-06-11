@@ -86,7 +86,7 @@
                 display: none; position: fixed;
                 font-family: "Microsoft JhengHei", Arial, sans-serif;
                 width: 400px; height: auto;
-                background: white; border: 1px solid #ccc;
+                color: #000000; background: white; border: 1px solid #ccc;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; z-index: 2147483647;
                 pointer-events: auto;
             }
@@ -95,7 +95,7 @@
             #popup-title { color: #5f6368; font-size: 14px; font-weight: bold; }
             #close-popup { color: black; background: none; border: none; cursor: pointer; font-size: 16px;}
             #close-popup:hover { color: #ff0000; }
-            #popup-result { font-color: black; font-size: 20px; padding: 15px; min-height: 40px; max-height: 220px; overflow-y: auto; overflow-x: hidden; line-height: 1.5; word-break: break-word; text-align: justify; }
+            #popup-result { color: #000000; font-size: 20px; padding: 15px; min-height: 40px; max-height: 220px; overflow-y: auto; overflow-x: hidden; line-height: 1.5; word-break: break-word; text-align: justify; }
             #popup-translation-source {
                 display: flex;
                 align-item: flex-start;
