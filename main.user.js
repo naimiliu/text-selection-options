@@ -541,7 +541,7 @@
             if (e.composedPath().some(el => el.id === 'my-reader-overlay')) {
                 return; // 油猴腳本直接結束，把主導權完全讓給擴充功能！
             }
-            
+
             setTimeout(() => {
                 // 取得目前選取的 Selection 物件
                 const selection = window.getSelection();
@@ -683,9 +683,9 @@
                     utterance.onstart = () => {
                         
                         this.activeProgressHandler({
-                            currentIndex: index,                        // 當前句子索引 (從 0 開始)
-                            totalCount: totalSentences,                 // 總句子數
-                            currentText: sentence,                      // 當前正在唸的文字
+                            currentIndex: index, // 當前句子索引 (從 0 開始)
+                            totalCount: totalSentences, // 總句子數
+                            currentText: sentence, // 當前正在唸的文字
                             percentage: Math.round(((index + 1) / totalSentences) * 100), // 進度百分比
                             isEnd: false
                         });
