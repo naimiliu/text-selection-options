@@ -554,9 +554,10 @@
                     // 顯示自定義選單
                     toolbox.classList.add("show");
                     const rect = selection.getRangeAt(0).getBoundingClientRect();
+                    const container = selection.anchorNode.parentElement;
+                    const containerRect = container.getBoundingClientRect();
                     toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
-                    toolbox.style.left = `${rect.left + (rect.width / 2) - (toolbox.offsetWidth / 2)}px`;
-                    loadPopupResult(selectedText);
+                    toolbox.style.left = `${Math.max(containerRect.left, Math.min(containerRect.left + containerRect.width - toolbox.offsetWidth, rect.left + rect.width / 2 - toolbox.offsetWidth / 2))}px`;
                     // 更新彈窗內容
                     if(popupType) {
                         loadPopupResult(selectedText);
