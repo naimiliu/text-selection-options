@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         文字選取工具箱
 // @namespace    https://github.com/naimiliu/text-selection-toolbox
-// @version      1.0.16.11
+// @version      1.0.17.0
 // @description  文字選取後,顯示命令列
 // @icon         https://raw.githubusercontent.com/naimiliu/text-selection-toolbox/main/options.svg
 // @author       naimiliu
@@ -79,6 +79,7 @@
                 cursor: pointer;
                 font-size: 14px;
             }
+            #toolbox button.hidden { display: none; }
             #toolbox button:hover {
                 color: #0056b3;
             }
@@ -205,6 +206,7 @@
             <button id="option3">朗讀</button>
             <button id="option4">翻譯</button>
             <button id="option5">拼音</button>
+            <button id="option6" class="hidden">分享</button>
         `;
         shadow.appendChild(toolbox);
 
@@ -237,6 +239,7 @@
             container.style.color = '#ffffff';
             container.style.fontSize = '20px';
             container.style.opacity = '1';
+            container.style.zIndex = 3147483647;
 
             // ⭐ 核心修改：將 opacity 改成 all，這樣透明度和大小變動都會有 0.3 秒的流暢動畫
             // （縮小動畫建議用 0.3s ~ 0.5s，1s 會顯得有點太慢、太拖沓）
@@ -268,8 +271,8 @@
                     popupResult.innerHTML = html(pureChinese);
                 }
                 else {
-                    popupResult.textContent = "只顯示中文拼音。";
-                }               
+                    popupResult.textContent = "只支援中文拼音。";
+                }
             }
             else if (popupType === '翻譯') {
                 const targetLang = /[\u4e00-\u9fa5]/.test(selectedText) ? 'en' : 'zh-TW';
@@ -332,6 +335,46 @@
                         }
                     }
                 });
+            }
+            else if (popupType === '分享') {
+                popupResult.innerHTML = "";
+                const pattern = /https:\/\/idgame.shopee.tw.*invitation_code=.{14}/;
+                const shareUrl = text.replace(/idgame.shopee.tw/g, 'idgame.shopee.tw\/universal-link').split(/[\n\r]|\s/g).map(s => s.trim()).filter(s => s.length > 0);
+                if(shareUrl && shareUrl.length > 1) {
+                    const copyBtnRow = document.createElement('div');
+                    copyBtnRow.id = "copy-btn-row";
+                    popupResult.appendChild(copyBtnRow);
+                    const divContainer = document.createElement('div');
+                    divContainer.className = 'all';
+                    popupResult.appendChild(divContainer);
+                    const idList = [['naimiliu', '18faf7a402'], ['wanglai', '18e8cadf4d'], ['maglion', '188385d78901'], ['T2','18a69dff9b01']];
+                    idList.forEach(id => {
+                        const div = document.createElement('div');
+                        div.className = id[0];
+                        div.style.fontSize = '10pt';
+                        div.insertAdjacentHTML("beforeend", `=== ${id[0]} ===<br>`);
+                        const button = document.createElement('button');
+                        button.style.marginRight = '5px';
+                        button.dataset.id = id[0];
+                        button.textContent = `${id[0]}`
+                        copyBtnRow.appendChild(button);
+                        shareUrl.forEach(s => {
+                            if(pattern.test(s)) {
+                                const s1 = (s.match(pattern) || []).join('');
+                                div.insertAdjacentHTML("beforeend", `<br>${s1}${id[1]}<br>`);
+                            }
+                            else {
+                                div.insertAdjacentHTML("beforeend", `${s} `);
+
+                            }
+                        })
+                        divContainer.appendChild(div);
+                    });
+                    const allButton = document.createElement('button');
+                    allButton.dataset.id = 'all';
+                    allButton.textContent = `all`;
+                    copyBtnRow.appendChild(allButton)
+                }
             }
         };
 
@@ -402,8 +445,8 @@
             popupType = '翻譯';
             popup.classList.add("show");
             popupTitle.innerText = "Google 翻譯";
-            popup.style.left = `${e.clientX + 10}px`;
-            popup.style.top = `${e.clientY + 10}px`;
+            popup.style.left = `${Math.max(10, Math.min(window.innerWidth - popup.offsetWidth - 20, toolbox.offsetLeft + 10))}px`;
+            popup.style.top = `${toolbox.offsetTop}px`;
         });
         // --- 拼音
         toolbox.querySelector("#option5").addEventListener("click", (e) => {
@@ -414,9 +457,23 @@
             popupType = '拼音';
             popup.classList.add("show");
             popupTitle.innerText = '拼音';
-            popup.style.left = `${e.clientX + 10}px`;
-            popup.style.top = `${e.clientY + 10}px`;
+            popup.style.left = `${Math.max(10, Math.min(window.innerWidth - popup.offsetWidth - 20, toolbox.offsetLeft + 10))}px`;
+            popup.style.top = `${toolbox.offsetTop}px`;
         });
+        // --- 分享
+        /*
+        toolbox.querySelector("#option6").addEventListener("click", (e) => {
+            if (popup.classList.contains("show") && popupType === '分享') {
+                popup.classList.remove("show");
+                return;
+            }
+            popupType = '分享';
+            popup.classList.add("show");
+            popupTitle.innerText = '分享';
+            popup.style.left = `${Math.max(10, Math.min(window.innerWidth - popup.offsetWidth - 20, toolbox.offsetLeft + 10))}px`;
+            popup.style.top = `${toolbox.offsetTop}px`;
+        });
+        */
         // 彈窗事件監聽
         popup.addEventListener("mouseup", e => {
             e.stopPropagation();
@@ -514,33 +571,52 @@
         });
         // 翻譯彈窗內容點擊事件
         popupResult.addEventListener('mouseup', (e) => {
-            // speaker 
-            const speakerBtn = e.target.closest('.popup-speaker');
-            if(speakerBtn) {
-                const text = speakerBtn.parentElement.textContent;
-                speaker.speak(text, (progress) => {
-                    if(progress.isInterrupted) {
-                        speakerBtn.classList.remove('is-playing');
-                        return;
-                    }
-                    if(progress.currentIndex === 0){
-                        speakerBtn.classList.add('is-playing');
-                    }
-                    if(progress.isEnd) {
-                        speakerBtn.classList.remove('is-playing');
-                    }
-                });
+            if(popupType === '翻譯'){
+                // speaker
+                const speakerBtn = e.target.closest('.popup-speaker');
+                if(speakerBtn) {
+                    const text = speakerBtn.parentElement.textContent;
+                    speaker.speak(text, (progress) => {
+                        if(progress.isInterrupted) {
+                            speakerBtn.classList.remove('is-playing');
+                            return;
+                        }
+                        if(progress.currentIndex === 0){
+                            speakerBtn.classList.add('is-playing');
+                        }
+                        if(progress.isEnd) {
+                            speakerBtn.classList.remove('is-playing');
+                        }
+                    });
+                    return;
+                }
+
+                // 原文收合/展開
+                const target = e.target.closest('#popup-translation-source');
+                if(target && target.classList.contains('has-more')) {
+                    e.preventDefault();
+                    target.classList.toggle('collapse');
+                    target.classList.toggle('expanded');
+                }
+                // 文字選取因點擊取消, 隱藏工具箱(toolbox)
+                toolbox.classList.remove("show");
                 return;
             }
-            // 原文收合/展開
-            const target = e.target.closest('#popup-translation-source');
-            if(target && target.classList.contains('has-more')) {
-                e.preventDefault();
-                target.classList.toggle('collapse');
-                target.classList.toggle('expanded');
+            if(popupType === '分享') {
+                const button = e.target.closest('button');
+                if(!button) return;
+                const id = button.dataset.id;
+                const text = popupResult.querySelector(`.${id}`).innerText;
+                try {
+                    // 呼叫瀏覽器原生 Clipboard API
+                    navigator.clipboard.writeText(text);
+                    showMessage("複製成功!", `${e.clientX}px`, `${e.clientY}px`);
+                } catch (err) {
+                    console.error('複製失敗:', err);
+                    showMessage("複製失敗，瀏覽器可能不支援。", `${e.clientX}px`, `${e.clientY}px`);
+                }
+
             }
-            // 文字選取因點擊取消, 隱藏工具箱(toolbox)
-            toolbox.classList.remove("show");
         });
 
         function toolboxHandler(e) {
@@ -552,6 +628,13 @@
                 selectedText = selection.toString().trim();
                 if (selectedText.length > 0) {
                     // 顯示自定義選單
+                    // --- 顯示 option6
+                    if(/idgame.shopee.tw\/buyer-quest\/quests\/.*\?invitation_code=/g.test(selectedText)){
+                        toolbox.querySelector("#option6").classList.remove('hidden');
+                    }
+                    else {
+                        toolbox.querySelector("#option6").classList.add('hidden');
+                    }
                     toolbox.classList.add("show");
                     const rect = selection.getRangeAt(0).getBoundingClientRect();
                     const container = selection.anchorNode.parentElement;
