@@ -629,12 +629,14 @@
                 if (selectedText.length > 0) {
                     // 顯示自定義選單
                     // --- 顯示 option6
-                    if(/idgame.shopee.tw\/buyer-quest\/quests\/.*\?invitation_code=/g.test(selectedText)){
+                    /*
+                    if (/idgame.shopee.tw\/buyer-quest\/quests\/.*\?invitation_code=/g.test(selectedText)) {
                         toolbox.querySelector("#option6").classList.remove('hidden');
                     }
                     else {
                         toolbox.querySelector("#option6").classList.add('hidden');
                     }
+                    */
                     toolbox.classList.add("show");
                     const rect = selection.getRangeAt(0).getBoundingClientRect();
                     const container = selection.anchorNode.parentElement;
@@ -642,7 +644,7 @@
                     toolbox.style.top = `${rect.top - toolbox.offsetHeight - 10}px`;
                     toolbox.style.left = `${Math.max(containerRect.left, Math.min(containerRect.left + containerRect.width - toolbox.offsetWidth, rect.left + rect.width / 2 - toolbox.offsetWidth / 2))}px`;
                     // 更新彈窗內容
-                    if(popupType) {
+                    if (popupType) {
                         loadPopupResult(selectedText);
                     }
                     return;
